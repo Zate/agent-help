@@ -95,13 +95,13 @@ A typical conforming CLI:
 2. Implements trailing `--agent-help` that returns AH1 (index) or AH2 (command detail) in AHF format.
 3. Optionally implements `--agent-out` on result-returning commands, emitting an AHF `ok`/`err` envelope followed by a TOON result body.
 
-That's it. You can adopt discovery first and add `--agent-out` later. See [§15 of the spec](AHF-RFC.md#15-accuracy-and-conformance) for conformance notes.
+That's it. You can adopt discovery first and add `--agent-out` later. See [§15 of the spec](https://zate.github.io/agent-help/spec.html#s15) for full conformance requirements.
 
 ---
 
 ## Does agent-help require a specific language or framework?
 
-No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The [spec](AHF-RFC.md#20-implementation-guidance) includes notes for Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.
+No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The [implementation guides](https://zate.github.io/agent-help/docs/implementation-guides.html) cover Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.
 
 ---
 
@@ -115,7 +115,7 @@ agent-help itself has no dependency on agentskills.io. Once your CLI conforms, a
 
 ## Is v0.1 stable enough to implement against?
 
-Yes, for trial implementations. The core wire shape, discovery convention, and `--agent-out` envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The [open questions](AHF-RFC.md#21-open-questions) are unlikely to affect a basic implementation.
+Yes, for trial implementations. The core wire shape, discovery convention, and `--agent-out` envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The [open questions](https://zate.github.io/agent-help/spec.html#s21) are unlikely to affect a basic implementation.
 
 If you implement agent-help, please open an implementation report issue — it helps track adoption and find spec gaps before 1.0.
 
@@ -123,4 +123,4 @@ If you implement agent-help, please open an implementation report issue — it h
 
 ## How do I contribute or raise a question?
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: open an issue using one of the templates (open question, errata, feature proposal, implementation report). For small fixes, a PR is welcome directly.
+Open an issue on [GitHub](https://github.com/Zate/agent-help/issues/new/choose) using one of the templates: open question, errata, feature proposal, or implementation report. For small fixes, a PR is welcome directly. See [CONTRIBUTING.md](https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md) for details.

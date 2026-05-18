@@ -25,3 +25,17 @@ Use this skill: https://raw.githubusercontent.com/Zate/agent-help/main/.agents/s
 ```text
 Read https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf and https://raw.githubusercontent.com/Zate/agent-help/main/agent-help-full.ahf. Use those AHF records to decide which agent-help docs to read next.
 ```
+
+---
+
+## Raw agent files
+
+These files are designed to be fetched directly by agents. Point your agent at the raw URL — no HTML parsing required.
+
+| File | Purpose | Raw URL |
+|---|---|---|
+| `llms.txt` | Short orientation (~55 lines) | https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt |
+| `llms-full.txt` | Full implementation brief (~311 lines) | https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt |
+| `.agents/skills/ahf/SKILL.md` | agentskills.io-format skill | https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md |
+| `agent-help.ahf` | AH1 index dogfood | https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf |
+| `agent-help-full.ahf` | AH2 detail dogfood | https://raw.githubusercontent.com/Zate/agent-help/main/agent-help-full.ahf |
