@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Examples — agent-help</title>
+  <meta name="description" content="Annotated AHF and --agent-out output examples. Useful for sanity-checking implementations and understanding the wire format.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/examples/">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="/" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="/#concept">Concept</a>
+      <a href="/spec.html">Spec</a>
+      <a href="/#implement">Implement</a>
+      <a href="/#for-agents">For&nbsp;agents</a>
+      <a href="/faq.html">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="../LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+    <div class="doc-wrap" style="max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad);">
+
+      <nav class="doc-toc" aria-label="Page contents">
+        <p class="doc-toc-heading">Examples</p>
+        <ul>
+          <li><a href="#ex01">01 — AH1 index</a></li>
+          <li><a href="#ex02">02 — AH2 detail</a></li>
+          <li><a href="#ex03">03 — Error with hint</a></li>
+          <li><a href="#ex04">04 — List results</a></li>
+          <li><a href="#ex05">05 — Single object</a></li>
+          <li><a href="#ex06">06 — Pagination + warning</a></li>
+        </ul>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+          <p class="doc-toc-heading">Related</p>
+          <ul>
+            <li><a href="/spec.html">Full spec</a></li>
+            <li><a href="/docs/implementation-guides.html">Framework guides</a></li>
+            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <article class="doc-body">
+        <header class="doc-header">
+          <p class="eyebrow">Wire format examples</p>
+          <h1>Examples</h1>
+          <p class="doc-lede">Concrete AHF outputs with annotations. These are generated from the Go reference implementation. Use them to sanity-check your own implementation or to understand the wire format before reading the full spec.</p>
+        </header>
+
+        <!-- EX 01 -->
+        <div class="ex-item" id="ex01">
+          <div class="ex-item-header">
+            <span class="ex-badge">01</span>
+            <h2>AH1 — agent-help index</h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem --agent-help</code></p>
+          <p class="doc-body" style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">AH1 is what an agent gets when it runs <code>tool --agent-help</code> at the root. It provides a compact index of all invocable commands. The <code>more?</code> record is a pointer — not a shell command — telling the agent how to get detail on any command.</p>
+          <p class="ex-output-label">Raw AHF output</p>
+          <pre>ah1 mem :: project memory — store and query facts, decisions, and tasks
+cmd node add &lt;text&gt; --type TYPE [--tag K:V...] :: store a new memory node
+cmd node list [--type TYPE] [--limit int] [--cursor id] :: list memory nodes
+cmd search query &lt;text&gt; [--type TYPE] [--limit int] [--cursor id] :: search nodes by text
+cmd search similar &lt;id&gt; [--limit int] [--cursor id] :: find nodes similar to a given node
+cmd project status :: show current project settings
+cmd project set --key KEY --value VALUE :: set a project setting
+more? mem &lt;cmd&gt; --agent-help</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>ah1</code> header: <code>ah1 &lt;tool&gt; :: &lt;purpose&gt;</code></li>
+              <li>Each <code>cmd</code> line shows the full command path, required args in <code>&lt;angle brackets&gt;</code>, and key optional flags in <code>[square brackets]</code></li>
+              <li><code>::</code> separates the signature from the human-readable purpose</li>
+              <li><code>more?</code> is a pointer record — the <code>?</code> is intentional. Do not copy <code>more?</code> into a shell command.</li>
+              <li>Target: fewer than 300 tokens for the entire AH1 output</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- EX 02 -->
+        <div class="ex-item" id="ex02">
+          <div class="ex-item-header">
+            <span class="ex-badge">02</span>
+            <h2>AH2 — command detail</h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem node add --agent-help</code></p>
+          <p style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">AH2 is the per-command detail page. An agent fetches this after seeing a command in AH1. It gives the agent everything needed to construct a correct invocation: the canonical form, typed arguments, typed flags, and working examples.</p>
+          <p class="ex-output-label">Raw AHF output</p>
+          <pre>ah2 mem node add
+use mem node add &lt;text&gt; --type TYPE [--tag K:V...]
+arg text:str req :: node text content
+flag --type:enum(decision|fact|pattern|task|observation) req :: node type
+flag --tag:kv repeat :: metadata key:value pairs
+ex mem node add "postgres 15 required" --type fact --tag project:mem
+ex mem node add "use TOON for --agent-out bodies" --type decision --tag project:mem --tag spec:ahf</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>ah2 &lt;tool&gt; &lt;command-path&gt;</code> — always the first line</li>
+              <li><code>use</code> — the canonical invocation template, one line only</li>
+              <li><code>arg &lt;name&gt;:&lt;type&gt; req|opt :: &lt;purpose&gt;</code> — positional argument with scalar type</li>
+              <li><code>flag --&lt;name&gt;:&lt;type&gt; req|opt|repeat [default=…] :: &lt;purpose&gt;</code> — flag definition</li>
+              <li><code>enum(a|b|c)</code> — closed set of valid values; agents should use exactly one of these</li>
+              <li><code>ex</code> — a valid, tested example invocation. Omit if it might drift or fail.</li>
+              <li>Target: fewer than 150 tokens for AH2</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- EX 03 -->
+        <div class="ex-item" id="ex03">
+          <div class="ex-item-header">
+            <span class="ex-badge">03</span>
+            <h2>Error with hint</h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem node add "postgres 15 required" --agent-out</code></p>
+          <p style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">When a required flag is missing, the tool returns an <code>err</code> record with a machine-readable code, a <code>hint</code> with the direct correction, and the canonical <code>use</code> form — everything an agent needs to retry correctly without calling <code>--help</code>.</p>
+          <p class="ex-output-label">Raw AHF output</p>
+          <pre>err missing_flag flag=--type
+hint --type enum(decision|fact|pattern|task|observation)
+use mem node add &lt;text&gt; --type TYPE [--tag K:V...]</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>err &lt;code&gt; [key=value…]</code> — machine-readable error code with structured metadata</li>
+              <li><code>flag=--type</code> identifies exactly which flag is missing — no prose parsing needed</li>
+              <li><code>hint</code> gives the direct correction, including valid enum values</li>
+              <li><code>use</code> gives the full canonical invocation so the agent can rebuild from scratch</li>
+              <li>Error output should never just say "run --help" — give the agent enough to retry directly</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- EX 04 -->
+        <div class="ex-item" id="ex04">
+          <div class="ex-item-header">
+            <span class="ex-badge">04</span>
+            <h2>List results — <code>--agent-out</code></h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem node list --agent-out</code></p>
+          <p style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">The most common runtime pattern. An <code>ok</code> status line carries envelope metadata, followed by a TOON result body, followed by a <code>next</code> record pointing the agent at a useful follow-up action.</p>
+          <p class="ex-output-label">Raw AHF + TOON output</p>
+          <pre>ok nodes count=8 shown=8 more=0
+nodes[#8]{id,type,tags,text}:
+  n_101,decision,"project:mem|arch",Use Cobra for the reference CLI implementation
+  n_102,fact,"project:mem|db",Mock data lives in data.go; no real storage in the reference impl
+  n_103,pattern,db|ops,Use connection pool max 20 in all environments
+  n_104,fact,"project:mem|api",AHF ok/err envelope always precedes the TOON body
+  n_105,decision,"project:mem|spec",TOON is the encoding for --agent-out result bodies
+  n_106,task,"project:mem|todo",Write reference Go implementation for agent-help
+  n_107,pattern,agent|cli,Always include next records for paginated results
+  n_108,fact,"project:mem|spec",more? record is a pointer not a shell command
+next inspect "mem search query &lt;text&gt; --agent-out"</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>ok</code> is the AHF protocol status line — always first, always AHF</li>
+              <li><code>count=</code> and <code>more=</code> are envelope metadata — always on the <code>ok</code> line</li>
+              <li><code>nodes[#8]{id,type,tags,text}:</code> is the TOON block header — <code>[#8]</code> is the length marker</li>
+              <li>Rows are two-space indented per TOON spec</li>
+              <li>Values are quoted only when they contain commas or spaces</li>
+              <li><code>next</code> is an AHF follow-up record — the exact command the agent should call next</li>
+              <li>TOON carries the data; AHF carries the protocol and follow-up</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- EX 05 -->
+        <div class="ex-item" id="ex05">
+          <div class="ex-item-header">
+            <span class="ex-badge">05</span>
+            <h2>Single object — <code>--agent-out</code></h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem project status --agent-out</code></p>
+          <p style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">When the result is a single structured object rather than a list, TOON encodes it as a vertical key/value table. The <code>ok</code> line uses a singular noun kind and carries no list metadata.</p>
+          <p class="ex-output-label">Raw AHF + TOON output</p>
+          <pre>ok project
+project[#6]{key,value}:
+  name,agent-help
+  version,0.1.0
+  status,draft
+  owner,team-cli
+  spec,AHF-RFC.md
+  repo,github.com/Zate/agent-help
+next nodes "mem node list --agent-out"</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>ok project</code> — singular noun, no list metadata (<code>count=</code>, <code>more=</code>) needed for a single object</li>
+              <li>TOON key/value table: one row per field, two columns (<code>key,value</code>)</li>
+              <li>This is the canonical TOON pattern for structured settings or config objects</li>
+              <li><code>next</code> gives the agent a natural follow-up action</li>
+            </ul>
+          </div>
+          <p style="color:var(--ink-soft);font-size:.95rem;line-height:1.6;margin-top:20px;">When there's no structured body at all — a bare acknowledgement or scalar status — you can use AHF key-value lines directly after <code>ok</code> without a TOON block (see <a href="/spec.html#s12-4">§12.4</a>):</p>
+          <pre>ok node
+id n_109
+type fact
+tags spec:ahf
+created 2026-05-12
+text "toon-go library works"
+next list "mem node list --agent-out"</pre>
+        </div>
+
+        <!-- EX 06 -->
+        <div class="ex-item" id="ex06">
+          <div class="ex-item-header">
+            <span class="ex-badge">06</span>
+            <h2>Pagination + warning</h2>
+          </div>
+          <p class="ex-cmd">Source command: <code>mem node list --limit 3 --agent-out</code></p>
+          <p style="color:var(--ink-soft);font-size:1rem;line-height:1.7;margin-bottom:12px;">Paginated results set <code>more=1</code> on the <code>ok</code> line and include a <code>cursor</code> token. A <code>warn</code> record signals truncation non-fatally. Two <code>next</code> records give the agent both the continuation command and an alternative action.</p>
+          <p class="ex-output-label">Raw AHF + TOON output</p>
+          <pre>ok nodes count=8 shown=3 more=1 cursor=c_n_104
+warn truncated shown=3 total=8
+nodes[#3]{id,type,tags,text}:
+  n_101,decision,"project:mem|arch",Use Cobra for the reference CLI implementation
+  n_102,fact,"project:mem|db",Mock data lives in data.go; no real storage in the reference impl
+  n_103,pattern,db|ops,Use connection pool max 20 in all environments
+next "mem node list --limit 3 --cursor c_n_104 --agent-out"
+next inspect "mem search query &lt;text&gt; --agent-out"</pre>
+          <div class="ex-notes">
+            <p class="ex-notes-label">Notes</p>
+            <ul>
+              <li><code>more=1</code> on the <code>ok</code> line signals paginated/truncated output — always include a <code>next</code> continuation</li>
+              <li><code>count=8</code> total available; <code>shown=3</code> rows in this response; <code>cursor=c_n_104</code> is the page token</li>
+              <li><code>warn truncated</code> is an AHF record — non-fatal, appears after <code>ok</code>, before the TOON body</li>
+              <li>The TOON body carries only the rows for this page — <code>[#3]</code> reflects the actual row count</li>
+              <li>Two <code>next</code> records: the unlabelled one is the continuation; the labelled one is an alternative action</li>
+              <li>The <code>cursor=</code> value from the <code>ok</code> envelope is passed through verbatim in the <code>next</code> command</li>
+              <li>An agent that sees <code>more=1</code> with no <code>next</code> record should treat this as a producer error</li>
+            </ul>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">Code <a href="../LICENSE">Apache-2.0</a> · Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></p>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="../spec.html">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
+          <li><a href="../spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="../llms.txt">llms.txt</a></li>
+          <li><a href="../llms-full.txt">llms-full.txt</a></li>
+          <li><a href="../SKILL.md">SKILL.md</a></li>
+          <li><a href="../agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="../agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="../prompts.html">Prompts</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="../docs/implementation-guides.html">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="../impl/">Reference implementation</a></li>
+          <li><a href="../examples/">Examples</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+</body>
+</html>

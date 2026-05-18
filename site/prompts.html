@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompts — agent-help</title>
+  <meta name="description" content="Copy-ready prompts for using AI coding agents to explain and implement agent-help in your CLI.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/prompts.html">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="/" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="/#concept">Concept</a>
+      <a href="spec.html">Spec</a>
+      <a href="/#implement">Implement</a>
+      <a href="/#for-agents">For&nbsp;agents</a>
+      <a href="faq.html">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+    <div class="doc-wrap" style="max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad);">
+
+      <nav class="doc-toc" aria-label="Page contents">
+        <p class="doc-toc-heading">Prompts</p>
+        <ul>
+          <li><a href="#explain">Explain agent-help</a></li>
+          <li><a href="#implement">Implement in a CLI</a></li>
+          <li><a href="#skill">Use the skill file</a></li>
+          <li><a href="#inspect">Inspect the AHF docs</a></li>
+        </ul>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);">
+          <p class="doc-toc-heading">Agent files</p>
+          <ul>
+            <li><a href="llms.txt">llms.txt</a></li>
+            <li><a href="llms-full.txt">llms-full.txt</a></li>
+            <li><a href="SKILL.md">SKILL.md</a></li>
+            <li><a href="agent-help.ahf">agent-help.ahf</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <article class="doc-body">
+        <header class="doc-header">
+          <p class="eyebrow">For agents &amp; developers</p>
+          <h1>Prompts</h1>
+          <p class="doc-lede">Use these prompts with an AI coding agent. Each one points the agent at the right raw file so it has everything it needs without browsing.</p>
+        </header>
+
+        <div class="prompt-full" id="explain">
+          <p class="prompt-full-tag">explain</p>
+          <h3>Explain agent-help</h3>
+          <pre id="prompt-explain">Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and explain what agent-help is for. Keep the explanation grounded in how an agent would use a CLI.</pre>
+          <button class="prompt-copy-btn" data-copy="prompt-explain">Copy prompt</button>
+        </div>
+
+        <div class="prompt-full" id="implement">
+          <p class="prompt-full-tag">implement</p>
+          <h3>Implement agent-help in a CLI</h3>
+          <pre id="prompt-implement">Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and implement agent-help in this CLI. Preserve normal --help and --json behavior. Add --agent-help for invocation help and --agent-out for structured runtime results where appropriate.</pre>
+          <button class="prompt-copy-btn" data-copy="prompt-implement">Copy prompt</button>
+        </div>
+
+        <div class="prompt-full" id="skill">
+          <p class="prompt-full-tag">skill</p>
+          <h3>Use the skill file</h3>
+          <pre id="prompt-skill">Use this skill: https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md</pre>
+          <button class="prompt-copy-btn" data-copy="prompt-skill">Copy prompt</button>
+        </div>
+
+        <div class="prompt-full" id="inspect">
+          <p class="prompt-full-tag">inspect</p>
+          <h3>Inspect the AHF docs</h3>
+          <pre id="prompt-inspect">Read https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf and https://raw.githubusercontent.com/Zate/agent-help/main/agent-help-full.ahf. Use those AHF records to decide which agent-help docs to read next.</pre>
+          <button class="prompt-copy-btn" data-copy="prompt-inspect">Copy prompt</button>
+        </div>
+
+        <div class="doc-body" style="margin-top: 40px;">
+          <h2>Raw agent files</h2>
+          <p>These files are designed to be fetched directly by agents. Point your agent at the raw URL — no HTML parsing required.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Purpose</th><th>Raw URL</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>llms.txt</code></td>
+                <td>Short orientation (~50 lines)</td>
+                <td><a href="https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt" rel="noopener">raw ↗</a></td>
+              </tr>
+              <tr>
+                <td><code>llms-full.txt</code></td>
+                <td>Full implementation brief</td>
+                <td><a href="https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt" rel="noopener">raw ↗</a></td>
+              </tr>
+              <tr>
+                <td><code>SKILL.md</code></td>
+                <td>agentskills.io-format skill</td>
+                <td><a href="https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md" rel="noopener">raw ↗</a></td>
+              </tr>
+              <tr>
+                <td><code>agent-help.ahf</code></td>
+                <td>AH1 entry + AH2 details (dogfood)</td>
+                <td><a href="https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf" rel="noopener">raw ↗</a></td>
+              </tr>
+              <tr>
+                <td><code>agent-help-full.ahf</code></td>
+                <td>Full AHF docs in AHF format</td>
+                <td><a href="https://raw.githubusercontent.com/Zate/agent-help/main/agent-help-full.ahf" rel="noopener">raw ↗</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">Code <a href="LICENSE">Apache-2.0</a> · Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></p>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="spec.html">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
+          <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="llms.txt">llms.txt</a></li>
+          <li><a href="llms-full.txt">llms-full.txt</a></li>
+          <li><a href="SKILL.md">SKILL.md</a></li>
+          <li><a href="agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="prompts.html">Prompts</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="docs/implementation-guides.html">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="impl/">Reference implementation</a></li>
+          <li><a href="examples/">Examples</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('button.prompt-copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = btn.getAttribute('data-copy');
+        var pre = document.getElementById(id);
+        if (!pre || !navigator.clipboard) return;
+        navigator.clipboard.writeText(pre.textContent.trim()).then(function() {
+          var orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

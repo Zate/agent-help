@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAQ — agent-help</title>
+  <meta name="description" content="Frequently asked questions about agent-help: why it exists, how it relates to MCP, JSON, man pages, and more.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/faq.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FAQ — agent-help">
+  <meta property="og:description" content="Why agent-help? Why not just MCP, JSON, or a man page?">
+  <meta property="og:url" content="https://zate.github.io/agent-help/faq.html">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="/" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="/#concept">Concept</a>
+      <a href="spec.html">Spec</a>
+      <a href="/#implement">Implement</a>
+      <a href="/#for-agents">For&nbsp;agents</a>
+      <a href="faq.html" aria-current="page">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+    <div class="doc-wrap" style="max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad);">
+
+      <!-- TOC -->
+      <nav class="doc-toc" aria-label="Page contents">
+        <p class="doc-toc-heading">Contents</p>
+        <ul>
+          <li><a href="#why-exist">Why does it exist?</a></li>
+          <li><a href="#toon">How does it relate to TOON?</a></li>
+          <li><a href="#json">Why not just use JSON?</a></li>
+          <li><a href="#help">Why not tell agents to read <code>--help</code>?</a></li>
+          <li><a href="#man">Why not man pages or completions?</a></li>
+          <li><a href="#mcp">How does it relate to MCP?</a></li>
+          <li><a href="#conforming">What does "conforming" mean?</a></li>
+          <li><a href="#language">Does it require a specific language?</a></li>
+          <li><a href="#agentskills">Relationship to agentskills.io?</a></li>
+          <li><a href="#stable">Is v0.1 stable enough to implement?</a></li>
+          <li><a href="#contribute">How do I contribute?</a></li>
+        </ul>
+      </nav>
+
+      <!-- Body -->
+      <article class="doc-body">
+        <header class="doc-header">
+          <p class="eyebrow">Frequently Asked Questions</p>
+          <h1>Why agent-help?</h1>
+          <p class="doc-lede">Common questions about what agent-help is, what it isn't, and how it relates to the tools and protocols you already know.</p>
+        </header>
+
+        <div class="faq-item" id="why-exist">
+          <p class="faq-q">Why does agent-help exist? Don't we have enough formats?</p>
+          <div class="faq-a">
+            <p>The short answer: existing formats solve adjacent problems, not this one.</p>
+            <p>CLIs already have two good output modes:</p>
+            <ul>
+              <li><code>--help</code> — prose for humans</li>
+              <li><code>--json</code> — structured data for software</li>
+            </ul>
+            <p>Neither works well for AI agents. Human output wastes tokens on decoration. JSON wastes tokens on punctuation and says nothing about how to discover commands, what to call next, or how to recover from errors.</p>
+            <p>agent-help defines a <em>third mode</em>: <code>--agent-help</code> for token-efficient discovery (using AHF line records) and <code>--agent-out</code> for dense runtime results (using TOON for data, AHF for the protocol envelope). The CLI exposes this surface directly; wrappers and servers can still build on top.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="toon">
+          <p class="faq-q">How does agent-help relate to TOON?</p>
+          <div class="faq-a">
+            <p>They're complementary layers — designed to work together.</p>
+            <p><a href="https://github.com/toon-format/spec" rel="noopener">TOON (Token-Oriented Object Notation)</a> is the recommended encoding for <code>--agent-out</code> result bodies. AHF and TOON each do their job:</p>
+            <table>
+              <thead><tr><th>Layer</th><th>Format</th><th>Covers</th></tr></thead>
+              <tbody>
+                <tr><td>Discovery</td><td>AHF</td><td><code>--agent-help</code>, AH1/AH2, command signatures, args, flags, examples</td></tr>
+                <tr><td>Protocol</td><td>AHF</td><td><code>ok</code>/<code>err</code>/<code>warn</code> status, <code>next</code>/<code>hint</code> follow-up records</td></tr>
+                <tr><td>Data</td><td>TOON</td><td>Result bodies, lists, objects, nested structures</td></tr>
+              </tbody>
+            </table>
+            <p>The golden path for <code>--agent-out</code>:</p>
+            <pre>ok nodes count=3 more=0                      ← AHF status line
+nodes[#3]{id,type,tags,text}:                ← TOON result body
+  n_102,fact,project:billing,postgres 15 required
+  n_088,decision,project:billing,migrate read model
+  n_061,pattern,db|ops,use connection pool max 20
+next inspect "mem search similar n_102 --agent-out"    ← AHF follow-up</pre>
+            <p>TOON handles the data. AHF handles the protocol.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="json">
+          <p class="faq-q">Why not just output JSON with <code>--json</code>?</p>
+          <div class="faq-a">
+            <p>You should keep <code>--json</code> for software consumers — agent-help doesn't replace it. But JSON is suboptimal for agents:</p>
+            <ol>
+              <li><strong>Token overhead.</strong> Braces, brackets, commas, and quotes repeat constantly. A 20-field list in JSON uses 3–5× more tokens than the equivalent TOON.</li>
+              <li><strong>No discovery.</strong> JSON encodes data. It says nothing about what commands exist, what args they take, or what to call next.</li>
+              <li><strong>No follow-up.</strong> A JSON result doesn't tell an agent what command to run for the next page, to inspect a failure, or to recover from an error. AHF <code>next</code> records embed this directly.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="faq-item" id="help">
+          <p class="faq-q">Why not just tell agents to read <code>--help</code>?</p>
+          <div class="faq-a">
+            <p>Human <code>--help</code> is designed for humans: prose, aligned columns, color escapes, examples chosen for clarity, aliases, version strings. Agents spend tokens on all of that decoration and still have to infer argument types, required flags, and valid enum values from prose.</p>
+            <p><code>--agent-help</code> emits the same information as compact AHF records — derived from the same command metadata, without the presentation layer.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="man">
+          <p class="faq-q">Why not use man pages or shell completion scripts?</p>
+          <div class="faq-a">
+            <p>They encode some overlapping information, but:</p>
+            <ul>
+              <li>They're separate files, not embedded in the tool's stdout.</li>
+              <li>They require platform-specific parsing.</li>
+              <li>They don't encode follow-up commands, pagination cursors, or error hints.</li>
+              <li>Completion scripts describe valid tokens, not valid typed invocations.</li>
+            </ul>
+            <p>agent-help is in the tool's output stream itself — no side-channel files, no platform-specific parsing.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="mcp">
+          <p class="faq-q">How does agent-help relate to MCP or plugin protocols?</p>
+          <div class="faq-a">
+            <p><a href="https://modelcontextprotocol.io" rel="noopener">MCP</a> and similar protocols wrap CLI capabilities in an RPC server. Powerful, but heavyweight:</p>
+            <ul>
+              <li>Separate server process to run and maintain.</li>
+              <li>Server SDK to implement.</li>
+              <li>Agent runtime must support MCP specifically.</li>
+              <li>Deployment and configuration surface.</li>
+            </ul>
+            <p>agent-help is complementary. It makes the CLI itself agent-readable, so an agent can use it directly. MCP wrappers, plugins, and skills can still be built on top of an agent-help CLI, but they are not required for basic discovery and invocation.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="conforming">
+          <p class="faq-q">What does "conforming" mean?</p>
+          <div class="faq-a">
+            <p>A typical conforming CLI:</p>
+            <ol>
+              <li>Adds a breadcrumb or equivalent pointer to normal <code>--help</code>.</li>
+              <li>Implements trailing <code>--agent-help</code> that returns AH1 (index) or AH2 (command detail) in AHF format.</li>
+              <li>Optionally implements <code>--agent-out</code> on result-returning commands, emitting an AHF <code>ok</code>/<code>err</code> envelope followed by a TOON result body.</li>
+            </ol>
+            <p>That's it. You can adopt discovery first and add <code>--agent-out</code> later. See <a href="spec.html#s15">§15 of the spec</a> for full conformance requirements.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="language">
+          <p class="faq-q">Does agent-help require a specific language or framework?</p>
+          <div class="faq-a">
+            <p>No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The <a href="docs/implementation-guides.html">implementation guides</a> cover Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="agentskills">
+          <p class="faq-q">What's the relationship to agentskills.io?</p>
+          <div class="faq-a">
+            <p><a href="https://agentskills.io" rel="noopener">agentskills.io</a> defines a standard format for packaging reusable agent capabilities as skills (a <code>SKILL.md</code> file with YAML frontmatter and instructions). This repo ships a <code>SKILL.md</code> that follows that format — it's a <strong>build-time development tool</strong> that helps you implement agent-help in your own CLI using an agent assistant.</p>
+            <p>agent-help itself has no dependency on agentskills.io. Once your CLI conforms, agents can use it directly with no skill file, MCP server, or any other runtime component.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="stable">
+          <p class="faq-q">Is v0.1 stable enough to implement against?</p>
+          <div class="faq-a">
+            <p>Yes, for trial implementations. The core wire shape, discovery convention, and <code>--agent-out</code> envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The open questions are unlikely to affect a basic implementation.</p>
+            <p>If you implement agent-help, please open an implementation report issue — it helps track adoption and find spec gaps before 1.0.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="contribute">
+          <p class="faq-q">How do I contribute or raise a question?</p>
+          <div class="faq-a">
+            <p>Open an issue on <a href="https://github.com/Zate/agent-help/issues/new/choose" rel="noopener">GitHub</a> using one of the templates: open question, errata, feature proposal, or implementation report. For small fixes, a PR is welcome directly. See <a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">CONTRIBUTING.md</a> for details.</p>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">Code <a href="LICENSE">Apache-2.0</a> · Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></p>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="spec.html">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
+          <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="llms.txt">llms.txt</a></li>
+          <li><a href="llms-full.txt">llms-full.txt</a></li>
+          <li><a href="SKILL.md">SKILL.md</a></li>
+          <li><a href="agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="prompts.html">Prompts</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="docs/implementation-guides.html">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="impl/">Reference implementation</a></li>
+          <li><a href="examples/">Examples</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AHF Specification v0.1 — agent-help</title>
+  <meta name="description" content="Agent Help Format (AHF) v0.1 — the full specification for --agent-help output and --agent-out protocol envelope.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/spec.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AHF Specification v0.1 — agent-help">
+  <meta property="og:description" content="The full AHF spec: record types, scalar types, AH1/AH2 help format, --agent-out envelope, TOON delegation, errors, pagination, conformance.">
+  <meta property="og:url" content="https://zate.github.io/agent-help/spec.html">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="/" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="/#concept">Concept</a>
+      <a href="spec.html" aria-current="page">Spec</a>
+      <a href="/#implement">Implement</a>
+      <a href="/#for-agents">For&nbsp;agents</a>
+      <a href="faq.html">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+    <div class="doc-wrap" style="max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad);">
+
+      <!-- sticky TOC -->
+      <nav class="doc-toc" aria-label="Spec table of contents">
+        <p class="doc-toc-heading">Contents</p>
+        <ol style="list-style:none;padding:0;margin:0;display:grid;gap:2px;">
+          <li><a href="#s1">§1 Introduction</a></li>
+          <li><a href="#s2">§2 Terminology</a></li>
+          <li><a href="#s3">§3 Requirement keywords</a></li>
+          <li><a href="#s4">§4 Design goals</a></li>
+          <li><a href="#s5">§5 Audience model</a></li>
+          <li><a href="#s6">§6 CLI discovery</a></li>
+          <li><a href="#s7">§7 AHF data model</a></li>
+          <li><a href="#s8">§8 Lexical syntax</a></li>
+          <li><a href="#s9">§9 Record prefix registry</a></li>
+          <li><a href="#s10">§10 Scalar type registry</a></li>
+          <li><a href="#s11">§11 <code>--agent-help</code> output</a></li>
+          <li><a href="#s12">§12 <code>--agent-out</code> convention</a></li>
+          <li><a href="#s13">§13 Error handling</a></li>
+          <li><a href="#s14">§14 Pagination &amp; follow-up</a></li>
+          <li><a href="#s15">§15 Conformance</a></li>
+          <li><a href="#s16">§16 Security &amp; privacy</a></li>
+          <li><a href="#s17">§17 A11y &amp; i18n</a></li>
+          <li><a href="#s18">§18 Versioning</a></li>
+          <li><a href="#s19">§19 Examples</a></li>
+          <li><a href="#s20">§20 Implementation guidance</a></li>
+          <li><a href="#s21">§21 Open questions</a></li>
+          <li><a href="#s22">§22 Related formats</a></li>
+          <li><a href="#appendix-a">Appendix A</a></li>
+        </ol>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);">
+          <a class="cta small" href="https://github.com/Zate/agent-help/blob/main/AHF-RFC.md" rel="noopener" style="display:inline-flex;margin-bottom:8px;">Raw markdown ↗</a>
+          <br>
+          <a href="spec/ahf-v0.1.json" style="font:500 12.5px/1.4 var(--mono);color:var(--ink-soft);">Machine-readable registry</a>
+        </div>
+      </nav>
+
+      <!-- spec body -->
+      <article class="doc-body">
+        <header class="doc-header">
+          <p class="eyebrow">Internet-Draft style · CC-BY-4.0</p>
+          <h1>Agent Help Format (AHF) v0.1</h1>
+          <p class="doc-lede">The specification for <code>--agent-help</code> output and the <code>--agent-out</code> protocol envelope. Written in Internet-Draft style with RFC&nbsp;2119 keywords used sparingly.</p>
+          <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:12px;font:500 13px/1 var(--mono);color:var(--muted);">
+            <span>Status: Internet-Draft</span>
+            <span>·</span>
+            <span>Category: Informational</span>
+            <span>·</span>
+            <span>Date: 2026-05-11</span>
+          </div>
+        </header>
+
+        <section id="abstract">
+          <h2>Abstract</h2>
+          <p>Agent Help Format (AHF) is the help and discovery sub-specification of the <strong>agent-help</strong> convention. It defines how command-line tools expose their interface to LLM agents via <code>--agent-help</code>, and how they signal runtime results and errors via <code>--agent-out</code>.</p>
+          <p>AHF defines two agent-facing surfaces:</p>
+          <ol>
+            <li><code>--agent-help</code> — a trailing global flag for command discovery and invocation construction. Output uses the AHF line-record format defined in this document.</li>
+            <li><code>--agent-out</code> — a runtime output mode signalling that the tool should emit agent-optimized output. Runtime result bodies SHOULD use <a href="https://github.com/toon-format/spec" rel="noopener">TOON (Token-Oriented Object Notation)</a>. Protocol-level status lines (<code>ok</code>, <code>err</code>) and follow-up commands (<code>next</code>, <code>hint</code>) are defined here.</li>
+          </ol>
+          <p>AHF is not a general-purpose serialization format, a replacement for JSON, or a competitor to TOON. It defines the discovery and invocation layer — the conversation between an agent and a CLI — not the encoding of data within that conversation.</p>
+        </section>
+
+        <section id="s1">
+          <span class="spec-section-num">§ 01</span>
+          <h2>1. Introduction</h2>
+          <p>Command-line tools commonly expose two output modes:</p>
+          <ul>
+            <li>human-readable output, optimized for people;</li>
+            <li>machine-readable output, commonly JSON, optimized for software parsers.</li>
+          </ul>
+          <p>LLM agents are neither traditional humans nor deterministic software parsers. Agents need concise, stable, low-ambiguity text that provides enough structure to construct correct commands, inspect results, recover from errors, and choose next actions. Human-oriented output often contains prose, alignment, color, headings, aliases, and examples that consume tokens without improving agent actionability. JSON is excellent for software integrations but contains punctuation and structural redundancy that is often unnecessary for language models.</p>
+          <p>The agent-help convention defines a small, composable set of CLI surfaces for agent-native interaction:</p>
+          <pre>human:    tool --help
+software: tool --json
+agent:    tool --agent-help
+agent:    tool subcmd args --agent-out</pre>
+          <p>AHF is the specification for the <code>--agent-help</code> output format and the <code>--agent-out</code> protocol envelope. For <code>--agent-out</code> result bodies, AHF delegates to TOON.</p>
+        </section>
+
+        <section id="s2">
+          <span class="spec-section-num">§ 02</span>
+          <h2>2. Terminology</h2>
+          <ul>
+            <li><strong>agent-help</strong> — the overall convention and project name.</li>
+            <li><strong>AHF</strong> — Agent Help Format; the specific line-record specification for <code>--agent-help</code> output and the <code>--agent-out</code> protocol envelope.</li>
+            <li><strong>AH1</strong> — Agent Help Index; the top-level help record set returned by <code>tool --agent-help</code>.</li>
+            <li><strong>AH2</strong> — Agent Help Detail; the command-level help record set returned by <code>tool subcmd --agent-help</code>.</li>
+            <li><strong>producer</strong> — a CLI tool that implements the agent-help convention.</li>
+            <li><strong>consumer</strong> — an LLM agent or agent runtime that reads AHF output.</li>
+            <li><strong>TOON</strong> — Token-Oriented Object Notation; the recommended encoding for <code>--agent-out</code> result bodies. See <a href="https://github.com/toon-format/spec" rel="noopener">https://github.com/toon-format/spec</a>.</li>
+          </ul>
+        </section>
+
+        <section id="s3">
+          <span class="spec-section-num">§ 03</span>
+          <h2>3. Requirement Keywords</h2>
+          <p>The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in RFC 2119 and RFC 8174.</p>
+        </section>
+
+        <section id="s4">
+          <span class="spec-section-num">§ 04</span>
+          <h2>4. Design Goals</h2>
+          <p>AHF is designed to achieve:</p>
+          <ol>
+            <li>low token count;</li>
+            <li>unambiguous machine parseability without a formal grammar;</li>
+            <li>human readability as a secondary property;</li>
+            <li>derivability from existing CLI framework metadata;</li>
+            <li>graceful degradation when truncated mid-stream.</li>
+          </ol>
+          <p>AHF explicitly does <em>not</em> attempt to achieve:</p>
+          <ol>
+            <li>arbitrary nested data serialization (delegated to TOON);</li>
+            <li>binary encoding efficiency;</li>
+            <li>schema validation.</li>
+          </ol>
+        </section>
+
+        <section id="s5">
+          <span class="spec-section-num">§ 05</span>
+          <h2>5. Audience Model</h2>
+          <table>
+            <thead><tr><th>Audience</th><th>Interface</th><th>Expected Format</th></tr></thead>
+            <tbody>
+              <tr><td>Humans</td><td>default output / <code>--help</code></td><td>prose, tables, color optional</td></tr>
+              <tr><td>Software</td><td><code>--json</code></td><td>strict JSON</td></tr>
+              <tr><td>Agents</td><td><code>--agent-help</code>, <code>--agent-out</code></td><td>AHF (help/protocol) + TOON (data)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="s6">
+          <span class="spec-section-num">§ 06</span>
+          <h2>6. CLI Discovery Convention</h2>
+
+          <h3>6.1 Human Help Breadcrumb</h3>
+          <p>Implementations SHOULD add the following breadcrumb, or an equivalent pointer, to normal human <code>--help</code> output:</p>
+          <pre>LLM agent? Use --agent-help for token-optimized usage.</pre>
+
+          <h3>6.2 <code>--agent-help</code> Flag Placement</h3>
+          <p><code>--agent-help</code> is designed as a trailing global flag. Implementations SHOULD accept the following positions:</p>
+          <pre>tool --agent-help
+tool subcmd --agent-help
+tool group subcmd --agent-help</pre>
+          <p>The following forms are discouraged and SHOULD NOT be documented as the primary form:</p>
+          <pre>tool --agent-help subcmd
+tool --agent-help group subcmd</pre>
+          <p>Implementations MAY accept leading placement for compatibility, but SHOULD avoid teaching agents that form.</p>
+
+          <h3>6.3 <code>--agent-out</code> Flag Placement</h3>
+          <p><code>--agent-out</code> requests agent-optimized runtime output. Implementations SHOULD support it as a global flag and SHOULD document the trailing form:</p>
+          <pre>tool subcmd args --agent-out</pre>
+          <p>When <code>--agent-out</code> is present, result bodies SHOULD be emitted as TOON. The protocol envelope (<code>ok</code>/<code>err</code> status lines, <code>next</code>/<code>hint</code>/<code>warn</code> records) uses AHF regardless. Tools MAY also support <code>--format toon</code> or equivalent aliases, but <code>--agent-out</code> is the RECOMMENDED flag name.</p>
+        </section>
+
+        <section id="s7">
+          <span class="spec-section-num">§ 07</span>
+          <h2>7. AHF Data Model</h2>
+          <p>AHF <code>--agent-help</code> output is a sequence of records. Each record is one line. The first token on each line identifies the record type. The remainder of the line contains record-specific fields.</p>
+          <p>AHF supports two structural patterns:</p>
+          <ol>
+            <li>metadata records using <code>key=value</code> fields;</li>
+            <li>key-value object lines for single-record output (used in AH2).</li>
+          </ol>
+          <p>AHF does not define its own tabular row format for runtime data. Use TOON for <code>--agent-out</code> result bodies.</p>
+        </section>
+
+        <section id="s8">
+          <span class="spec-section-num">§ 08</span>
+          <h2>8. Lexical Syntax</h2>
+
+          <h3>8.1 Character Encoding</h3>
+          <p>AHF output is UTF-8. ASCII-only output is RECOMMENDED when practical.</p>
+
+          <h3>8.2 Lines</h3>
+          <p>Each AHF record is emitted on a single line terminated by LF (<code>\n</code>) or CRLF (<code>\r\n</code>). Consumers SHOULD tolerate a final line without a trailing newline.</p>
+
+          <h3>8.3 Tokens</h3>
+          <p>Tokens are separated by one or more spaces. Producers SHOULD emit a single space between tokens.</p>
+
+          <h3>8.4 Key-Value Metadata</h3>
+          <p>Metadata fields use the form <code>key=value</code>. Keys SHOULD use lowercase ASCII letters, digits, <code>_</code>, or <code>-</code>. Values SHOULD be unquoted when they do not contain whitespace or reserved delimiters.</p>
+
+          <h3>8.5 Quoting</h3>
+          <p>Values containing whitespace, quotes, or reserved delimiters SHOULD be quoted using double quotes. Within quoted strings, producers SHOULD escape double quotes and backslashes using backslash escapes.</p>
+          <pre>summary "Implement AHF support"
+summary "agent said \"retry\""</pre>
+          <p>Consumers SHOULD be liberal in accepting quoted values and SHOULD NOT fail the entire output if one quoted field cannot be decoded.</p>
+
+          <h3>8.6 Null and Unknown Values</h3>
+          <p>The underscore token (<code>_</code>) represents null, unknown, missing, or not applicable. Producers SHOULD prefer <code>_</code> over empty strings in positional fields.</p>
+
+          <h3>8.7 Lists</h3>
+          <p>Short lists inside one field SHOULD use the pipe character (<code>|</code>).</p>
+          <pre>tags project:billing|db|critical</pre>
+          <p>Long lists SHOULD use a follow-up <code>next</code> command pointing to a TOON result.</p>
+
+          <h3>8.8 Comments and Decorative Text</h3>
+          <p>AHF output SHOULD avoid decorative headings, color escape codes, markdown formatting, prose paragraphs, and trailing comments. Producers aiming for strict interoperability should make every line a parseable record.</p>
+        </section>
+
+        <section id="s9">
+          <span class="spec-section-num">§ 09</span>
+          <h2>9. Record Prefix Registry</h2>
+          <p>The following record prefixes are defined for AHF:</p>
+          <table>
+            <thead><tr><th>Prefix</th><th>Meaning</th><th>Context</th></tr></thead>
+            <tbody>
+              <tr><td><code>ah1</code></td><td>agent-help index</td><td><code>--agent-help</code> on root</td></tr>
+              <tr><td><code>ah2</code></td><td>agent-help detail</td><td><code>--agent-help</code> on subcommand</td></tr>
+              <tr><td><code>ok</code></td><td>success status</td><td><code>--agent-out</code> protocol envelope</td></tr>
+              <tr><td><code>err</code></td><td>error</td><td>any</td></tr>
+              <tr><td><code>warn</code></td><td>non-fatal warning</td><td><code>--agent-out</code> protocol envelope</td></tr>
+              <tr><td><code>cmd</code></td><td>command entry</td><td>AH1</td></tr>
+              <tr><td><code>use</code></td><td>canonical invocation</td><td>AH2</td></tr>
+              <tr><td><code>arg</code></td><td>positional argument definition</td><td>AH2</td></tr>
+              <tr><td><code>flag</code></td><td>flag definition</td><td>AH2</td></tr>
+              <tr><td><code>ex</code></td><td>valid example invocation</td><td>AH2</td></tr>
+              <tr><td><code>hint</code></td><td>direct correction</td><td>after <code>err</code></td></tr>
+              <tr><td><code>next</code></td><td>follow-up or continuation command</td><td>after <code>ok</code> or <code>err</code></td></tr>
+              <tr><td><code>more?</code></td><td>pointer to AH2 detail; not a shell command</td><td>AH1</td></tr>
+            </tbody>
+          </table>
+          <p>The <code>?</code> in <code>more?</code> is intentional. It makes the record visibly advisory rather than executable: it points to the shape of a follow-up <code>--agent-help</code> request, but agents should not copy the <code>more?</code> token into a shell command.</p>
+        </section>
+
+        <section id="s10">
+          <span class="spec-section-num">§ 10</span>
+          <h2>10. Scalar Type Registry</h2>
+          <p>The following scalar types are used in <code>arg</code> and <code>flag</code> records:</p>
+          <table>
+            <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>str</code></td><td>free text string</td></tr>
+              <tr><td><code>int</code></td><td>integer</td></tr>
+              <tr><td><code>num</code></td><td>float</td></tr>
+              <tr><td><code>bool</code></td><td>true / false</td></tr>
+              <tr><td><code>path</code></td><td>filesystem path</td></tr>
+              <tr><td><code>url</code></td><td>URL</td></tr>
+              <tr><td><code>id</code></td><td>opaque identifier</td></tr>
+              <tr><td><code>ts</code></td><td>Unix timestamp</td></tr>
+              <tr><td><code>date</code></td><td>ISO 8601 date</td></tr>
+              <tr><td><code>dur</code></td><td>duration string (e.g. <code>30s</code>, <code>5m</code>, <code>2h</code>)</td></tr>
+              <tr><td><code>kv</code></td><td>key:value pair</td></tr>
+              <tr><td><code>enum(a|b)</code></td><td>one of the listed values</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="s11">
+          <span class="spec-section-num">§ 11</span>
+          <h2>11. <code>--agent-help</code> Output</h2>
+
+          <h3>11.1 AH1: Agent Help Index</h3>
+          <p>AH1 is returned by <code>tool --agent-help</code>. It provides a compact index of all invocable commands.</p>
+          <pre>ah1 &lt;tool&gt; :: &lt;purpose&gt;
+cmd &lt;command-signature&gt; :: &lt;purpose&gt;
+cmd &lt;group&gt; &lt;command-signature&gt; :: &lt;purpose&gt;
+more? &lt;tool&gt; &lt;cmd&gt; --agent-help</pre>
+          <p>AH1 output starts with an <code>ah1</code> header. It SHOULD include at least one <code>cmd</code> record unless the tool has no subcommands, and SHOULD include a <code>more?</code> record describing how to request AH2 detail. The <code>more?</code> record is a pointer, not a shell command.</p>
+          <p>Rules:</p>
+          <ul>
+            <li>One <code>cmd</code> line per invocable command.</li>
+            <li>Flatten nested commands into command paths.</li>
+            <li>Include required args inline in <code>&lt;angle brackets&gt;</code>.</li>
+            <li>Include only highest-value optional flags in <code>[square brackets]</code>.</li>
+            <li>No aliases, author, version, prose, examples, or flag details.</li>
+            <li>Sort by likely agent usage when known.</li>
+            <li>Target fewer than 300 tokens.</li>
+          </ul>
+
+          <h3>11.2 AH2: Agent Help Detail</h3>
+          <p>AH2 is returned by <code>tool subcmd --agent-help</code>. It describes one invocable command.</p>
+          <pre>ah2 &lt;tool&gt; &lt;command-path&gt;
+use &lt;canonical invocation&gt;
+arg &lt;name&gt;:&lt;type&gt; &lt;req|opt&gt; :: &lt;purpose&gt;
+flag --&lt;name&gt;:&lt;type&gt; &lt;req|opt|repeat&gt; [default=&lt;value&gt;] :: &lt;purpose&gt;
+ex &lt;valid example invocation&gt;</pre>
+          <p>AH2 output starts with an <code>ah2</code> header and normally includes a <code>use</code> record. It SHOULD include all required arguments and required flags. It SHOULD include optional flags that materially change behavior, and MAY omit obscure optional flags. Every <code>ex</code> record SHOULD be valid as written; omit examples that are likely to drift or fail. AH2 output SHOULD target fewer than 150 tokens.</p>
+
+          <h3>11.3 Accuracy of Help Output</h3>
+          <p><code>--agent-help</code> is the agent-facing source of truth. Implementations SHOULD derive AH1 and AH2 from the same command metadata used for dispatch. Producers SHOULD NOT knowingly emit command signatures, flags, defaults, enum values, or examples that contradict actual behavior.</p>
+        </section>
+
+        <section id="s12">
+          <span class="spec-section-num">§ 12</span>
+          <h2>12. <code>--agent-out</code> Convention</h2>
+
+          <h3>12.1 Overview</h3>
+          <p><code>--agent-out</code> signals that the tool should emit agent-optimized output. The output consists of two layers:</p>
+          <ol>
+            <li><strong>Protocol envelope</strong> — AHF status and control records (<code>ok</code>, <code>err</code>, <code>warn</code>, <code>next</code>, <code>hint</code>). These are always AHF.</li>
+            <li><strong>Result body</strong> — the actual data. This SHOULD be TOON. See <a href="https://github.com/toon-format/spec" rel="noopener">https://github.com/toon-format/spec</a>.</li>
+          </ol>
+
+          <h3>12.2 Success Envelope</h3>
+          <p>Successful runtime output begins with an <code>ok</code> record:</p>
+          <pre>ok &lt;kind&gt; [key=value...]</pre>
+          <p><code>kind</code> SHOULD be a plural noun for list results and a singular noun for single-object results. Common metadata keys: <code>count=</code>, <code>more=0|1</code>, <code>shown=</code>, <code>cursor=</code>, <code>truncated=1</code>.</p>
+          <pre>ok issues count=3 more=0
+issues[#3]{key,status,assignee,summary}:
+  PROJ-123,open,team-cli,Add AHF support
+  PROJ-124,done,team-docs,Document CLI flags
+  PROJ-125,open,team-runtime,Write TOON encoder
+next inspect "forge issue PROJ-123 --agent-out"</pre>
+
+          <h3>12.3 Warning Records</h3>
+          <p>Non-fatal warnings SHOULD use <code>warn</code> records immediately after the <code>ok</code> line:</p>
+          <pre>warn &lt;code&gt; [key=value...]</pre>
+          <p>Warnings do not change success semantics. A successful command with warnings still begins with <code>ok</code>.</p>
+
+          <h3 id="s12-4">12.4 When TOON Is Insufficient</h3>
+          <p>When TOON cannot represent the result (e.g. a single scalar status, a bare acknowledgement, or a result with no structured data), producers MAY emit key-value lines directly after <code>ok</code>:</p>
+          <pre>ok deploy
+env prod
+status healthy
+version 3.2.1
+next logs "tool logs --env prod --agent-out"</pre>
+          <p>This form SHOULD be used only when there is no tabular or structured data to encode. For any list or object result, TOON is RECOMMENDED.</p>
+        </section>
+
+        <section id="s13">
+          <span class="spec-section-num">§ 13</span>
+          <h2>13. Error Handling</h2>
+
+          <h3>13.1 Error Envelope</h3>
+          <p>Invalid invocations and runtime errors begin with an <code>err</code> record:</p>
+          <pre>err &lt;code&gt; [key=value...]</pre>
+
+          <h3>13.2 TOON Error Bodies</h3>
+          <p>Where TOON provides a suitable error encoding, producers SHOULD emit a TOON body after <code>err</code>. Where TOON is insufficient (e.g. a simple missing-flag correction), producers SHOULD use AHF <code>hint</code> and <code>use</code> records:</p>
+          <pre>err &lt;code&gt; [key=value...]
+hint &lt;direct correction&gt;
+use &lt;canonical invocation if useful&gt;</pre>
+          <p>Error outputs SHOULD include enough information for an agent to retry without calling human <code>--help</code>. Tools SHOULD NOT respond to agent-facing errors only with "run --help".</p>
+          <p>For missing required values, errors SHOULD identify the exact missing argument or flag. For enum violations, errors SHOULD list valid values.</p>
+          <pre>err invalid_enum flag=--type got=note
+hint --type enum(decision|fact|pattern|task|observation)
+use mem node add &lt;text&gt; --type TYPE [--tag K:V...]</pre>
+        </section>
+
+        <section id="s14">
+          <span class="spec-section-num">§ 14</span>
+          <h2>14. Pagination, Truncation, and Follow-Up Commands</h2>
+          <p><code>next</code> records MAY include a label:</p>
+          <pre>next "tool list --cursor c_123 --agent-out"
+next inspect "tool show n_102 --agent-out"</pre>
+          <p>If output is paginated, truncated, or partial, the <code>ok</code> record SHOULD include metadata such as <code>more=1</code>, <code>truncated=1</code>, <code>shown=&lt;n&gt;</code>, <code>count=&lt;n&gt;</code>, or <code>cursor=&lt;value&gt;</code>. When <code>more=1</code> or <code>truncated=1</code>, output SHOULD include an exact continuation command in a <code>next</code> record.</p>
+        </section>
+
+        <section id="s15">
+          <span class="spec-section-num">§ 15</span>
+          <h2>15. Accuracy and Conformance</h2>
+
+          <h3>15.1 Conforming AHF Producer</h3>
+          <p>A conforming AHF producer:</p>
+          <ul>
+            <li>emits UTF-8 line-oriented AHF records;</li>
+            <li>uses registered record prefixes according to this document;</li>
+            <li>emits AH1 for <code>tool --agent-help</code>;</li>
+            <li>emits AH2 for <code>tool subcmd --agent-help</code> when subcommands exist;</li>
+            <li>emits <code>ok</code> or <code>err</code> as the first record for <code>--agent-out</code>;</li>
+            <li>uses TOON for <code>--agent-out</code> result bodies where practical;</li>
+            <li>avoids human formatting in agent-facing output;</li>
+            <li>preserves stable field names where practical.</li>
+          </ul>
+
+          <h3>15.2 Conforming Agent-Help CLI</h3>
+          <p>A conforming agent-help CLI:</p>
+          <ul>
+            <li>supports trailing <code>--agent-help</code>;</li>
+            <li>includes the human help breadcrumb;</li>
+            <li>keeps AH1 and AH2 synchronized with actual command behavior;</li>
+            <li>tests every AH1 command path has AH2 output;</li>
+            <li>tests every AH2 example or omits examples.</li>
+          </ul>
+
+          <h3>15.3 Conforming Agent-Out CLI</h3>
+          <p>A conforming agent-out CLI:</p>
+          <ul>
+            <li>supports <code>--agent-out</code> for structured runtime results;</li>
+            <li>emits TOON for result bodies;</li>
+            <li>emits AHF <code>ok</code>/<code>err</code> protocol envelope before the TOON body;</li>
+            <li>includes identifiers required for follow-up operations;</li>
+            <li>includes exact continuation commands for pagination and truncation;</li>
+            <li>redacts sensitive values by default.</li>
+          </ul>
+          <p>See also: <a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">CONFORMANCE.md ↗</a> for the full conformance level definitions (L1, L2, L3).</p>
+        </section>
+
+        <section id="s16">
+          <span class="spec-section-num">§ 16</span>
+          <h2>16. Security and Privacy Considerations</h2>
+          <p>AHF output is plain text and may be consumed by LLM agents with broad access. Producers SHOULD:</p>
+          <ul>
+            <li>redact secrets, tokens, credentials, and keys from all agent-facing output by default;</li>
+            <li>avoid including personal data beyond what is necessary for the agent to act;</li>
+            <li>treat <code>--agent-out</code> output as potentially logged by agent runtimes.</li>
+          </ul>
+          <p>Producers SHOULD NOT rely on AHF output being private.</p>
+        </section>
+
+        <section id="s17">
+          <span class="spec-section-num">§ 17</span>
+          <h2>17. Accessibility and Internationalization</h2>
+          <p>AHF output is ASCII-preferred plain text. It does not use color, emoji, or locale-specific formatting. Non-ASCII field values are UTF-8. Record type tokens are ASCII.</p>
+        </section>
+
+        <section id="s18">
+          <span class="spec-section-num">§ 18</span>
+          <h2>18. Versioning</h2>
+          <p>AHF uses semantic versioning:</p>
+          <ul>
+            <li><strong>Patch</strong> (0.1.x) — errata and clarifications; no normative changes.</li>
+            <li><strong>Minor</strong> (0.x) — new optional record types or conventions; backward-compatible.</li>
+            <li><strong>Major</strong> (x.0) — breaking changes to record format or required conventions.</li>
+          </ul>
+          <p>Producers MAY advertise their supported AHF version in a <code>version</code> key on the <code>ah1</code> or <code>ok</code> record. Consumers SHOULD tolerate unknown record prefixes gracefully.</p>
+        </section>
+
+        <section id="s19">
+          <span class="spec-section-num">§ 19</span>
+          <h2>19. Examples</h2>
+          <p>See the <a href="examples/">annotated examples page</a> for all examples with detailed notes. Abbreviated versions follow.</p>
+
+          <h3>19.1 AH1 Index</h3>
+          <pre>ah1 mem :: project memory — store and query facts, decisions, and tasks
+cmd node add &lt;text&gt; --type TYPE [--tag K:V...] :: store a new memory node
+cmd node list [--type TYPE] [--limit int] [--cursor id] :: list memory nodes
+cmd search query &lt;text&gt; [--type TYPE] [--limit int] [--cursor id] :: search nodes by text
+cmd search similar &lt;id&gt; [--limit int] [--cursor id] :: find nodes similar to a given node
+cmd project status :: show current project settings
+cmd project set --key KEY --value VALUE :: set a project setting
+more? mem &lt;cmd&gt; --agent-help</pre>
+
+          <h3>19.2 AH2 Detail</h3>
+          <pre>ah2 mem node add
+use mem node add &lt;text&gt; --type TYPE [--tag K:V...]
+arg text:str req :: node text content
+flag --type:enum(decision|fact|pattern|task|observation) req :: node type
+flag --tag:kv repeat :: metadata key:value
+ex mem node add "postgres 15 required" --type fact --tag project:mem</pre>
+
+          <h3>19.3 Error Hint</h3>
+          <pre>err invalid_enum flag=--type got=note
+hint --type enum(decision|fact|pattern|observation)
+use mem node add &lt;text&gt; --type TYPE</pre>
+
+          <h3>19.4 Runtime List (TOON body)</h3>
+          <pre>ok nodes count=8 shown=3 more=0
+nodes[#3]{id,type,tags,text}:
+  n_102,fact,"project:billing|db",postgres 15 required for billing service
+  n_088,decision,project:billing,migrate billing read model to postgres
+  n_061,pattern,db|ops,use connection pool max 20 in all environments
+next inspect "mem search similar n_102 --agent-out"</pre>
+
+          <h3>19.5 Runtime Object (TOON key-value table)</h3>
+          <pre>ok project
+project[#6]{key,value}:
+  name,agent-help
+  version,0.1.0
+  status,draft
+  owner,team-cli
+  spec,AHF-RFC.md
+  repo,github.com/Zate/agent-help
+next nodes "mem node list --agent-out"</pre>
+
+          <h3>19.6 Scalar Acknowledgement (AHF key-value fallback, §12.4)</h3>
+          <pre>ok node
+id n_109
+type fact
+tags spec:ahf
+created 2026-05-12
+text "toon-go library works"
+next list "mem node list --agent-out"</pre>
+
+          <h3>19.7 Paginated List with Warning</h3>
+          <pre>ok nodes count=8 shown=3 more=1 cursor=c_n_104
+warn truncated shown=3 total=8
+nodes[#3]{id,type,tags,text}:
+  n_101,decision,"project:mem|arch",Use Cobra for the reference CLI implementation
+  n_102,fact,"project:mem|db",Mock data lives in data.go
+  n_103,pattern,db|ops,Use connection pool max 20 in all environments
+next "mem node list --limit 3 --cursor c_n_104 --agent-out"
+next inspect "mem search query &lt;text&gt; --agent-out"</pre>
+        </section>
+
+        <section id="s20">
+          <span class="spec-section-num">§ 20</span>
+          <h2>20. Implementation Guidance</h2>
+          <p>Implementations SHOULD generate AHF help from existing command metadata rather than maintaining a separate handwritten command list. Common approaches:</p>
+          <ul>
+            <li><strong>Cobra (Go)</strong> — hidden persistent flags, derive from <code>Command.Use</code>, flags, args, annotations.</li>
+            <li><strong>Click (Python)</strong> — hidden eager options, derive from <code>Command.params</code> and context command path.</li>
+            <li><strong>Clap (Rust)</strong> — hidden global args, derive from <code>Command::get_subcommands()</code> and arguments.</li>
+            <li><strong>Commander (Node)</strong> — global options and <code>preAction</code> hooks, derive from command metadata.</li>
+            <li><strong>Argparse (Python)</strong> — global flags and parser/subparser/action metadata.</li>
+          </ul>
+          <p>See the <a href="docs/implementation-guides.html">framework implementation guides</a> for framework-specific code snippets.</p>
+          <p>Implementations SHOULD add tests that verify:</p>
+          <ul>
+            <li>human <code>--help</code> includes the breadcrumb;</li>
+            <li>AH1 includes every primary command;</li>
+            <li>every AH1 command has AH2 output;</li>
+            <li>AH2 required flags and args match validation;</li>
+            <li>AH2 examples run successfully;</li>
+            <li><code>--agent-out</code> begins with <code>ok</code> or <code>err</code>;</li>
+            <li>TOON body follows the <code>ok</code> envelope for list and object results;</li>
+            <li>paginated outputs include <code>next</code>.</li>
+          </ul>
+        </section>
+
+        <section id="s21">
+          <span class="spec-section-num">§ 21</span>
+          <h2>21. Open Questions</h2>
+          <p>This draft intentionally leaves several issues open for experimentation:</p>
+          <ol>
+            <li>Should <code>--agent-out</code> become <code>--format toon</code>, <code>--toon</code>, or remain as specified?</li>
+            <li>Should a formal ABNF grammar be added for AHF in v0.2?</li>
+            <li>Should MIME type registration be pursued, for example <code>text/ahf</code>?</li>
+            <li>Should record prefix extension namespacing be defined?</li>
+            <li>Should conformance levels distinguish <code>--agent-help</code>-only from full <code>--agent-help</code> plus <code>--agent-out</code>?</li>
+            <li>Should examples be packaged as a model comprehension test suite?</li>
+          </ol>
+          <p>Raise an <a href="https://github.com/Zate/agent-help/issues/new/choose" rel="noopener">issue on GitHub</a> to discuss any of these.</p>
+        </section>
+
+        <section id="s22">
+          <span class="spec-section-num">§ 22</span>
+          <h2>22. Relationship to Other Formats</h2>
+
+          <h3>22.1 AHF and TOON</h3>
+          <p><a href="https://github.com/toon-format/spec" rel="noopener">TOON</a> is the RECOMMENDED encoding for <code>--agent-out</code> result bodies. AHF and TOON are complementary layers:</p>
+          <table>
+            <thead><tr><th>Layer</th><th>Format</th><th>Covers</th></tr></thead>
+            <tbody>
+              <tr><td>Discovery</td><td>AHF</td><td><code>--agent-help</code>, AH1/AH2, command signatures, args, flags, examples</td></tr>
+              <tr><td>Protocol</td><td>AHF</td><td><code>ok</code>/<code>err</code>/<code>warn</code> status, <code>next</code>/<code>hint</code> follow-up</td></tr>
+              <tr><td>Data</td><td>TOON</td><td>Result bodies, lists, objects, nested structures</td></tr>
+            </tbody>
+          </table>
+
+          <h3>22.2 Why not JSON for <code>--agent-out</code>?</h3>
+          <ol>
+            <li><strong>Punctuation overhead.</strong> Braces, brackets, commas, and quotes consume tokens without adding agent-actionable meaning.</li>
+            <li><strong>No discovery protocol.</strong> JSON encodes data; it says nothing about what commands exist, what arguments they take, or what to call next.</li>
+            <li><strong>No follow-up commands.</strong> JSON results do not carry <code>next</code> commands, pagination cursors, or error hints.</li>
+          </ol>
+          <p>Use <code>--json</code> when software is the consumer. Use <code>--agent-out</code> when an agent is.</p>
+
+          <h3>22.3 Why not plain text / <code>--help</code>?</h3>
+          <p>Human <code>--help</code> is optimized for human reading: prose descriptions, aligned columns, color codes, aliases, version strings. Agents spend tokens on decoration and must infer argument types, required flags, and valid values from prose. <code>--agent-help</code> replaces this with a compact, machine-structured surface derived from the same command metadata.</p>
+
+          <h3>22.4 Why not man pages or completion scripts?</h3>
+          <ul>
+            <li>Separate files, not embedded in the binary's output stream.</li>
+            <li>Platform-specific parsing required.</li>
+            <li>No follow-up commands, pagination, or error hints.</li>
+            <li>Completion scripts describe valid tokens, not valid typed invocations.</li>
+          </ul>
+
+          <h3>22.5 How does this relate to MCP or plugin protocols?</h3>
+          <p><a href="https://modelcontextprotocol.io" rel="noopener">Model Context Protocol (MCP)</a> and similar protocols wrap capabilities in an RPC server layer. agent-help is complementary: it makes the CLI itself agent-readable. MCP wrappers, plugins, and skills can still be built on top of an agent-help CLI, but they are not required for basic agent-native discovery and invocation.</p>
+        </section>
+
+        <section id="appendix-a">
+          <h2>Appendix A. Minimal Agent Implementation Prompt</h2>
+          <p>When asking an agent to implement agent-help in a CLI, provide <a href="llms-full.txt"><code>llms-full.txt</code></a> or the following minimal instruction:</p>
+          <pre>Implement the agent-help convention. Add trailing global --agent-help for AH1/AH2 invocation help using AHF line records. Add --agent-out for structured runtime results: emit an ok/err AHF status line, then a TOON body for result data. Humans keep --help. Software keeps --json. Agents get --agent-help and --agent-out. Follow AHF-RFC.md.</pre>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">Code <a href="LICENSE">Apache-2.0</a> · Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></p>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="spec.html" aria-current="page">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
+          <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="llms.txt">llms.txt</a></li>
+          <li><a href="llms-full.txt">llms-full.txt</a></li>
+          <li><a href="SKILL.md">SKILL.md</a></li>
+          <li><a href="agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="prompts.html">Prompts</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="docs/implementation-guides.html">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="impl/">Reference implementation</a></li>
+          <li><a href="examples/">Examples</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+</body>
+</html>

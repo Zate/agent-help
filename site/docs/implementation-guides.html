@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Framework Implementation Guides — agent-help</title>
+  <meta name="description" content="How to add --agent-help and --agent-out to your CLI in Go/Cobra, Python/Click, Python/argparse, Rust/Clap, and Node/Commander.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/docs/implementation-guides.html">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="/" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="/#concept">Concept</a>
+      <a href="/spec.html">Spec</a>
+      <a href="/#implement">Implement</a>
+      <a href="/#for-agents">For&nbsp;agents</a>
+      <a href="/faq.html">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="../LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+    <div class="doc-wrap" style="max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad);">
+
+      <nav class="doc-toc" aria-label="Page contents">
+        <p class="doc-toc-heading">Frameworks</p>
+        <ul>
+          <li><a href="#shared">Shared pattern</a></li>
+          <li><a href="#cobra">Go / Cobra</a></li>
+          <li><a href="#click">Python / Click</a></li>
+          <li><a href="#argparse">Python / argparse</a></li>
+          <li><a href="#clap">Rust / Clap</a></li>
+          <li><a href="#commander">Node / Commander</a></li>
+          <li><a href="#refimpl">Reference implementation</a></li>
+        </ul>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+          <p class="doc-toc-heading">Related</p>
+          <ul>
+            <li><a href="/spec.html">Full spec</a></li>
+            <li><a href="/examples/">Wire examples</a></li>
+            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <article class="doc-body">
+        <header class="doc-header">
+          <p class="eyebrow">For implementers</p>
+          <h1>Framework Implementation Guides</h1>
+          <p class="doc-lede">How to wire up <code>--agent-help</code> and <code>--agent-out</code> in the most common CLI frameworks. These notes cover framework-specific wiring — use the <a href="/spec.html">spec</a> for the full AHF format.</p>
+        </header>
+
+        <!-- SHARED PATTERN -->
+        <div id="shared">
+          <h2>Shared pattern</h2>
+          <p>Regardless of framework, the approach is the same:</p>
+          <ul>
+            <li>Keep human <code>--help</code> human-oriented. Don't touch it.</li>
+            <li>Add a short breadcrumb line pointing agents to <code>--agent-help</code>.</li>
+            <li>Treat <code>--agent-help</code> as <strong>trailing</strong>: <code>tool subcmd --agent-help</code>.</li>
+            <li>Generate AH1/AH2 from command metadata where practical — don't maintain a separate list.</li>
+            <li>Add <code>--agent-out</code> only to commands that return structured runtime results.</li>
+            <li>Protect the surface with golden or snapshot tests.</li>
+          </ul>
+
+          <h3>The three steps</h3>
+          <ol>
+            <li><strong>~1 min:</strong> Add the breadcrumb to normal <code>--help</code> output:<br>
+              <code>LLM agent? Use --agent-help for token-optimized usage.</code></li>
+            <li><strong>~1 hr:</strong> Wire up <code>--agent-help</code> as a hidden persistent/global flag. Root invocation emits AH1; subcommand invocation emits AH2.</li>
+            <li><strong>~2 hrs:</strong> Add <code>--agent-out</code> to result-returning commands. Emit an AHF <code>ok</code>/<code>err</code> envelope, then a TOON result body.</li>
+          </ol>
+        </div>
+
+        <!-- COBRA -->
+        <div class="fw-section" id="cobra">
+          <div class="fw-section-head">
+            <span class="fw-section-lang">Go</span>
+            <h2>Cobra</h2>
+          </div>
+          <p>Use a hidden persistent flag on the root command so it's available on every subcommand:</p>
+          <pre><code>var agentHelp bool
+
+root.PersistentFlags().BoolVar(&amp;agentHelp, "agent-help", false, "show token-optimized help for LLM agents")
+_ = root.PersistentFlags().MarkHidden("agent-help")</code></pre>
+          <p>Intercept before command execution and print AH1 for the root command or AH2 for the selected subcommand. Use a <code>PersistentPreRunE</code> hook:</p>
+          <pre><code>root.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+    if agentHelp {
+        if cmd == root {
+            printAH1(root)
+        } else {
+            printAH2(cmd)
+        }
+        os.Exit(0)
+    }
+    return nil
+}</code></pre>
+          <h3>Cobra-specific notes</h3>
+          <ul>
+            <li><code>cmd.CommandPath()</code> gives the full command path (e.g. <code>tool node add</code>).</li>
+            <li><code>cmd.Use</code> gives the positional shape; <code>cmd.Short</code> gives the purpose.</li>
+            <li>Annotate scalar types explicitly — <code>pflag.Value.Type()</code> is not enough for good AHF output.</li>
+            <li>Commands with required positional args need an <code>Args</code> bypass when <code>--agent-help</code> is set:</li>
+          </ul>
+          <pre><code>Args: func(cmd *cobra.Command, args []string) error {
+    if agentHelp {
+        return nil
+    }
+    return cobra.ExactArgs(1)(cmd, args)
+},</code></pre>
+        </div>
+
+        <!-- CLICK -->
+        <div class="fw-section" id="click">
+          <div class="fw-section-head">
+            <span class="fw-section-lang">Python</span>
+            <h2>Click</h2>
+          </div>
+          <p>Use a hidden eager option so Click intercepts before action execution:</p>
+          <pre><code>def agent_help_option(fn):
+    return click.option(
+        "--agent-help",
+        is_flag=True,
+        is_eager=True,
+        expose_value=False,
+        hidden=True,
+        callback=emit_agent_help,
+    )(fn)</code></pre>
+          <p>Apply the decorator to every command and group. In <code>emit_agent_help</code>, inspect the Click context to determine whether to emit AH1 (group) or AH2 (concrete command).</p>
+          <h3>Click-specific notes</h3>
+          <ul>
+            <li>Inspect <code>ctx.command</code> and <code>ctx.parent</code> to determine AH1 vs AH2.</li>
+            <li>Root groups emit AH1; concrete commands emit AH2.</li>
+            <li><code>command.params</code> exposes arguments and options — iterate to build AH2 records.</li>
+            <li><code>click.Choice</code> maps naturally to <code>enum(a|b)</code> in AHF.</li>
+            <li>Use custom attrs or a sidecar table for concise descriptions and examples — Click's <code>help</code> strings are prose-oriented.</li>
+          </ul>
+        </div>
+
+        <!-- ARGPARSE -->
+        <div class="fw-section" id="argparse">
+          <div class="fw-section-head">
+            <span class="fw-section-lang">Python</span>
+            <h2>argparse</h2>
+          </div>
+          <p>Add a hidden flag to the root parser:</p>
+          <pre><code>parser.add_argument("--agent-help", action="store_true", help=argparse.SUPPRESS)</code></pre>
+          <p>Check the flag after <code>parse_known_args()</code>, before dispatch:</p>
+          <pre><code>args, remaining = parser.parse_known_args()
+if args.agent_help:
+    emit_ahf(parser, remaining)
+    sys.exit(0)</code></pre>
+          <h3>argparse-specific notes</h3>
+          <ul>
+            <li>Subparser handling varies — <code>parse_known_args()</code> before dispatch can help identify the target subcommand.</li>
+            <li>argparse internals are not ideal as the only metadata source — keep a small metadata table alongside parser construction for signatures, scalar types, and examples.</li>
+            <li>Add <code>--agent-help</code> to each subparser as well as the root parser.</li>
+          </ul>
+        </div>
+
+        <!-- CLAP -->
+        <div class="fw-section" id="clap">
+          <div class="fw-section-head">
+            <span class="fw-section-lang">Rust</span>
+            <h2>Clap</h2>
+          </div>
+          <p>Add a hidden global arg:</p>
+          <pre><code>Arg::new("agent-help")
+    .long("agent-help")
+    .global(true)
+    .hide(true)
+    .action(ArgAction::SetTrue)</code></pre>
+          <p>Check the flag in your dispatch logic before running the subcommand:</p>
+          <pre><code>if matches.get_flag("agent-help") {
+    emit_ahf(&amp;cmd, &amp;matches);
+    std::process::exit(0);
+}</code></pre>
+          <h3>Clap-specific notes</h3>
+          <ul>
+            <li><code>Command::get_name()</code> gives command segments for building the command path.</li>
+            <li><code>Command::get_about()</code> gives the short purpose text for AH1/AH2 headers.</li>
+            <li><code>Command::get_subcommands()</code> can walk the tree to build AH1.</li>
+            <li>Possible values map naturally to <code>enum(a|b)</code> in AHF.</li>
+            <li>Value parsers do not always map cleanly to AHF scalar types — explicit metadata is clearer.</li>
+          </ul>
+        </div>
+
+        <!-- COMMANDER -->
+        <div class="fw-section" id="commander">
+          <div class="fw-section-head">
+            <span class="fw-section-lang">Node</span>
+            <h2>Commander</h2>
+          </div>
+          <p>Add a global option and detect it in a <code>preAction</code> hook:</p>
+          <pre><code>program.option("--agent-help", "show token-optimized help for LLM agents");
+
+program.hook("preAction", (thisCommand) =&gt; {
+  if (thisCommand.opts().agentHelp) {
+    emitAHF(thisCommand);
+    process.exit(0);
+  }
+});</code></pre>
+          <h3>Commander-specific notes</h3>
+          <ul>
+            <li><code>program.addHelpText("after", "LLM agent? Use --agent-help for token-optimized usage.")</code> adds the breadcrumb.</li>
+            <li><code>program.commands</code> can be walked recursively to build AH1.</li>
+            <li><code>command.name()</code> gives the command segment; <code>command.description()</code> gives the purpose.</li>
+            <li>Add explicit metadata for scalar types, defaults, and examples — Commander's option definitions don't carry AHF-ready type info.</li>
+          </ul>
+        </div>
+
+        <!-- REF IMPL -->
+        <div id="refimpl">
+          <h2>Reference implementation</h2>
+          <p>The Go/Cobra <code>mem</code> demo in <a href="../impl/"><code>impl/</code></a> is a complete, working implementation targeting <code>agent-help-full</code> conformance. It demonstrates:</p>
+          <ul>
+            <li>AH1 and AH2 help surfaces derived from Cobra command metadata</li>
+            <li>AHF <code>ok</code>/<code>err</code>/<code>warn</code> protocol records</li>
+            <li>TOON list and object bodies for <code>--agent-out</code></li>
+            <li>Pagination with continuation <code>next</code> records and cursor tokens</li>
+            <li>Golden-output tests for key surfaces</li>
+          </ul>
+          <p>Crib from it freely — it's Apache-2.0 licensed and designed to be copied.</p>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">Code <a href="../LICENSE">Apache-2.0</a> · Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></p>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="../spec.html">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
+          <li><a href="../spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="../llms.txt">llms.txt</a></li>
+          <li><a href="../llms-full.txt">llms-full.txt</a></li>
+          <li><a href="../SKILL.md">SKILL.md</a></li>
+          <li><a href="../agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="../agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="../prompts.html">Prompts</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="implementation-guides.html" aria-current="page">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="../impl/">Reference implementation</a></li>
+          <li><a href="../examples/">Examples</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+</body>
+</html>
