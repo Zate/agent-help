@@ -14,7 +14,7 @@ Use this checklist before tagging or publicly announcing a repository release.
    - `llms.txt`
    - `llms-full.txt`
    - `.agents/skills/ahf/SKILL.md`
-   - `references/REFERENCE.md`
+   - `.agents/skills/ahf/references/REFERENCE.md`
    - `examples/`
    - `spec/ahf-v0.1.json`
    - `docs/CONFORMANCE.md`

@@ -13,5 +13,5 @@ Primary project documents:
 - [Conformance Levels](CONFORMANCE.md)
 - [Versioning](VERSIONING.md)
 - [Changelog](../CHANGELOG.md)
-- [Quick Reference](../references/REFERENCE.md)
+- [Quick Reference](../.agents/skills/ahf/references/REFERENCE.md)
 - [Test Fixtures](../tests/README.md)

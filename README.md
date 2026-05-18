@@ -141,7 +141,7 @@ more? tool <cmd> --agent-help
 | [`agent-help.ahf`](agent-help.ahf) | AHF-style docs entry point |
 | [`agent-help-full.ahf`](agent-help-full.ahf) | AH2-style details for agent-help doc flows |
 | [`prompts.md`](prompts.md) | Copy/paste prompts for agents |
-| [`references/REFERENCE.md`](references/REFERENCE.md) | Quick-reference card |
+| [`.agents/skills/ahf/references/REFERENCE.md`](.agents/skills/ahf/references/REFERENCE.md) | Quick-reference card |
 | [`examples/`](examples/) | Standalone examples for testing model comprehension |
 | [`CONFORMANCE.md`](docs/docs/CONFORMANCE.md) | Conformance levels for implementers |
 | [`spec/ahf-v0.1.json`](spec/ahf-v0.1.json) | Machine-readable registry and shape manifest |

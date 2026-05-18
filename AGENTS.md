@@ -20,13 +20,13 @@ Specifically:
 
 | When you change | Also update |
 |---|---|
-| Record prefix registry (§9) | `llms-full.txt` AHF record prefixes list, `references/REFERENCE.md` prefix table |
-| Scalar type registry (§10) | `llms-full.txt` types list, `references/REFERENCE.md` scalar types table |
+| Record prefix registry (§9) | `llms-full.txt` AHF record prefixes list, `.agents/skills/ahf/references/REFERENCE.md` prefix table |
+| Scalar type registry (§10) | `llms-full.txt` types list, `.agents/skills/ahf/references/REFERENCE.md` scalar types table |
 | AH1 format or rules (§11.1) | `llms-full.txt` AH1 section, `.agents/skills/ahf/SKILL.md` AH1 section, examples/01-* |
 | AH2 format or rules (§11.2) | `llms-full.txt` AH2 section, `.agents/skills/ahf/SKILL.md` AH2 section, examples/02-* |
 | Error format (§13) | `llms-full.txt` error hint section, `.agents/skills/ahf/SKILL.md` AE1 section, examples/03-* |
 | `--agent-out` envelope (§12) | `llms-full.txt` --agent-out section, `.agents/skills/ahf/SKILL.md`, examples/04-* 05-* 06-* |
-| TOON delegation rules (§12) | `llms-full.txt` TOON section, `references/REFERENCE.md` |
+| TOON delegation rules (§12) | `llms-full.txt` TOON section, `.agents/skills/ahf/references/REFERENCE.md` |
 | Pagination/truncation (§14) | `llms-full.txt` follow-up commands section, examples/06-* |
 | Conformance requirements (§15) | `llms-full.txt` implementation requirements section |
 | Any normative text | `FAQ.md` if it answers a common question |
@@ -41,7 +41,7 @@ Specifically:
 | `llms-full.txt` | Full implementation brief | Agents implementing agent-help in a CLI |
 | `.agents/skills/ahf/SKILL.md` | agentskills.io-compatible build skill | Agents using skill-aware platforms |
 | `FAQ.md` | Conversational "why agent-help?" | Skeptical humans, first-time visitors |
-| `references/REFERENCE.md` | Quick-reference card | Agents needing a registry lookup |
+| `.agents/skills/ahf/references/REFERENCE.md` | Quick-reference card | Agents needing a registry lookup |
 | `examples/` | Annotated output samples | Agents and implementers |
 | `docs/CONFORMANCE.md` | Conformance levels | Implementers |
 | `spec/ahf-v0.1.json` | Machine-readable spec manifest | Tooling, validators |
@@ -85,7 +85,7 @@ Do not hardcode other URLs without updating both.
 - [ ] `AHF-RFC.md` section numbers in cross-references still correct?
 - [ ] `llms-full.txt` reflects the change?
 - [ ] `llms.txt` still accurately describes the shape of agent-help?
-- [ ] `references/REFERENCE.md` tables still match the registries?
+- [ ] `.agents/skills/ahf/references/REFERENCE.md` tables still match the registries?
 - [ ] Examples in `examples/` still valid per the current spec?
 - [ ] `FAQ.md` still accurate?
 - [ ] `.agents/skills/ahf/SKILL.md` still consistent with the spec?
