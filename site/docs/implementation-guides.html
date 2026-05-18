@@ -153,7 +153,7 @@ _ = root.PersistentFlags().MarkHidden("agent-help")</code></pre>
           <p>Apply the decorator to every command and group. In <code>emit_agent_help</code>, inspect the Click context to determine whether to emit AH1 (group) or AH2 (concrete command).</p>
           <h3>Click-specific notes</h3>
           <ul>
-            <li>Inspect <code>ctx.command</code> and <code>ctx.parent</code> to determine AH1 vs AH2.</li>
+            <li>Inspect <code>context.command</code> and <code>context.parent</code> to determine AH1 vs AH2.</li>
             <li>Root groups emit AH1; concrete commands emit AH2.</li>
             <li><code>command.params</code> exposes arguments and options — iterate to build AH2 records.</li>
             <li><code>click.Choice</code> maps naturally to <code>enum(a|b)</code> in AHF.</li>
