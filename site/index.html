@@ -29,10 +29,10 @@
     </a>
     <nav class="topnav" aria-label="Primary">
       <a href="#concept">Concept</a>
-      <a href="#spec">Spec</a>
+      <a href="spec.html">Spec</a>
       <a href="#implement">Implement</a>
       <a href="#for-agents">For&nbsp;agents</a>
-      <a href="FAQ.md">FAQ</a>
+      <a href="faq.html">FAQ</a>
       <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
   </header>
@@ -62,7 +62,7 @@
           no wrapper service, no MCP server, no plugin shim required for the basic path.
         </p>
         <div class="hero-actions">
-          <a class="cta primary" href="AHF-RFC.md">Read the spec<span aria-hidden="true">&nbsp;→</span></a>
+          <a class="cta primary" href="spec.html">Read the spec<span aria-hidden="true">&nbsp;→</span></a>
           <a class="cta" href="#wire">See the wire</a>
           <a class="cta ghost" href="llms-full.txt">Implementation brief</a>
         </div>
@@ -296,20 +296,20 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
         <nav class="spec-toc" aria-label="Spec table of contents">
           <p class="toc-heading">Table of contents</p>
           <ol>
-            <li><a href="AHF-RFC.md#1-introduction"><span>§1</span> Introduction</a></li>
-            <li><a href="AHF-RFC.md#2-conventions-and-definitions"><span>§2</span> Conventions &amp; definitions</a></li>
-            <li><a href="AHF-RFC.md#3-design-goals"><span>§3</span> Design goals</a></li>
-            <li><a href="AHF-RFC.md#4-document-model"><span>§4</span> Document model</a></li>
-            <li><a href="AHF-RFC.md#5-record-types"><span>§5</span> Record types</a></li>
-            <li><a href="AHF-RFC.md#6-scalar-types"><span>§6</span> Scalar types</a></li>
-            <li><a href="AHF-RFC.md#7-help-output-ah1ah2"><span>§7</span> Help output (AH1/AH2)</a></li>
-            <li><a href="AHF-RFC.md#8-runtime-output-agent-out"><span>§8</span> Runtime output (<code>--agent-out</code>)</a></li>
-            <li><a href="AHF-RFC.md#9-errors-and-warnings"><span>§9</span> Errors &amp; warnings</a></li>
-            <li><a href="AHF-RFC.md#10-pagination-and-continuation"><span>§10</span> Pagination</a></li>
-            <li><a href="AHF-RFC.md#20-implementation-guidance"><span>§20</span> Implementation guidance</a></li>
-            <li><a href="AHF-RFC.md#21-open-questions"><span>§21</span> Open questions</a></li>
+            <li><a href="spec.html#s1"><span>§1</span> Introduction</a></li>
+            <li><a href="spec.html#s2"><span>§2</span> Terminology</a></li>
+            <li><a href="spec.html#s4"><span>§4</span> Design goals</a></li>
+            <li><a href="spec.html#s7"><span>§7</span> AHF data model</a></li>
+            <li><a href="spec.html#s9"><span>§9</span> Record prefix registry</a></li>
+            <li><a href="spec.html#s10"><span>§10</span> Scalar type registry</a></li>
+            <li><a href="spec.html#s11"><span>§11</span> Help output (AH1/AH2)</a></li>
+            <li><a href="spec.html#s12"><span>§12</span> Runtime output (<code>--agent-out</code>)</a></li>
+            <li><a href="spec.html#s13"><span>§13</span> Errors &amp; warnings</a></li>
+            <li><a href="spec.html#s14"><span>§14</span> Pagination</a></li>
+            <li><a href="spec.html#s20"><span>§20</span> Implementation guidance</a></li>
+            <li><a href="spec.html#s21"><span>§21</span> Open questions</a></li>
           </ol>
-          <a class="cta small" href="AHF-RFC.md">Read full spec&nbsp;→</a>
+          <a class="cta small" href="spec.html">Read full spec&nbsp;→</a>
         </nav>
 
         <div class="spec-callouts">
@@ -340,7 +340,7 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
                 <dd>Add <code>--agent-out</code> on result-returning commands. AHF envelope + TOON body. Recoverable errors.</dd>
               </div>
             </dl>
-            <p class="callout-foot"><a href="CONFORMANCE.md">Full conformance criteria&nbsp;→</a></p>
+            <p class="callout-foot"><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Full conformance criteria&nbsp;↗</a></p>
           </article>
         </div>
       </div>
@@ -387,27 +387,27 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
       <div class="frameworks">
         <p class="frameworks-heading">Framework guides</p>
         <div class="fw-grid">
-          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+          <a class="fw" href="docs/implementation-guides.html#cobra">
             <span class="fw-lang">Go</span>
             <strong>Cobra</strong>
             <span class="fw-hint">hidden persistent flag · annotation walk</span>
           </a>
-          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+          <a class="fw" href="docs/implementation-guides.html#click">
             <span class="fw-lang">Python</span>
             <strong>Click</strong>
             <span class="fw-hint">eager global option · params reflection</span>
           </a>
-          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+          <a class="fw" href="docs/implementation-guides.html#argparse">
             <span class="fw-lang">Python</span>
             <strong>argparse</strong>
             <span class="fw-hint">global flag · subparser metadata</span>
           </a>
-          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+          <a class="fw" href="docs/implementation-guides.html#clap">
             <span class="fw-lang">Rust</span>
             <strong>Clap</strong>
             <span class="fw-hint">hidden global arg · post-parse intercept</span>
           </a>
-          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+          <a class="fw" href="docs/implementation-guides.html#commander">
             <span class="fw-lang">Node</span>
             <strong>Commander</strong>
             <span class="fw-hint">global option · preAction hook</span>
@@ -500,7 +500,7 @@ and explain what agent-help is for.</code></pre>
 and implement agent-help in this CLI.</code></pre>
           </div>
         </div>
-        <p class="prompts-foot"><a href="prompts.md">More prompts&nbsp;→</a></p>
+        <p class="prompts-foot"><a href="prompts.html">More prompts&nbsp;→</a></p>
       </div>
     </section>
 
@@ -515,32 +515,32 @@ and implement agent-help in this CLI.</code></pre>
       </header>
 
       <div class="examples-grid">
-        <a class="example" href="examples/01-agent-help-index-simple.md">
+        <a class="example" href="examples/#ex01">
           <span class="ex-num">01</span>
           <strong>AH1 index, simple</strong>
           <span>Plain command index for a small CLI.</span>
         </a>
-        <a class="example" href="examples/02-agent-help-command-detail.md">
+        <a class="example" href="examples/#ex02">
           <span class="ex-num">02</span>
           <strong>AH2 detail</strong>
           <span>Args, flags, and an example for one command.</span>
         </a>
-        <a class="example" href="examples/03-agent-help-error-hint.md">
+        <a class="example" href="examples/#ex03">
           <span class="ex-num">03</span>
           <strong>Errors with hints</strong>
           <span>How agents recover without parsing prose.</span>
         </a>
-        <a class="example" href="examples/04-agent-out-list-results.md">
+        <a class="example" href="examples/#ex04">
           <span class="ex-num">04</span>
           <strong>List results</strong>
           <span>AHF envelope + TOON body. Common case.</span>
         </a>
-        <a class="example" href="examples/05-agent-out-single-object.md">
+        <a class="example" href="examples/#ex05">
           <span class="ex-num">05</span>
           <strong>Single object</strong>
           <span>One record returned as a TOON row.</span>
         </a>
-        <a class="example" href="examples/06-agent-out-paginated-warning.md">
+        <a class="example" href="examples/#ex06">
           <span class="ex-num">06</span>
           <strong>Pagination + warning</strong>
           <span>more=, warn records, follow-up next.</span>
@@ -602,7 +602,7 @@ and implement agent-help in this CLI.</code></pre>
           <div>No</div>
         </div>
       </div>
-      <p class="hint"><a href="FAQ.md">FAQ: How does this relate to MCP, OpenAPI, JSON Schema?&nbsp;→</a></p>
+      <p class="hint"><a href="faq.html#mcp">FAQ: How does this relate to MCP, OpenAPI, JSON Schema?&nbsp;→</a></p>
     </section>
 
     <!-- ─────────────────────────  READ NEXT  ───────────────────────── -->
@@ -613,27 +613,27 @@ and implement agent-help in this CLI.</code></pre>
       </header>
 
       <div class="rn-grid">
-        <a class="rn-card primary" href="AHF-RFC.md">
+        <a class="rn-card primary" href="spec.html">
           <span class="rn-tag">specification</span>
           <strong>AHF&nbsp;Draft v0.1</strong>
           <span>The Internet-Draft style specification. Records, scalars, conformance, security.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="FAQ.md">
+        <a class="rn-card" href="faq.html">
           <span class="rn-tag">explainer</span>
           <strong>FAQ</strong>
           <span>Why agent-help? Why not just MCP, JSON, or a man page?</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="docs/ADOPTER_CHECKLIST.md">
+        <a class="rn-card" href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">
           <span class="rn-tag">checklist</span>
-          <strong>Adopter checklist</strong>
+          <strong>Adopter checklist&nbsp;↗</strong>
           <span>Track readiness from breadcrumb to runtime output.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="docs/PRIOR_ART.md">
+        <a class="rn-card" href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">
           <span class="rn-tag">research</span>
-          <strong>Prior art</strong>
+          <strong>Prior art&nbsp;↗</strong>
           <span>How agent-help relates to docopt, man, structured logging, and more.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
@@ -643,9 +643,9 @@ and implement agent-help in this CLI.</code></pre>
           <span>Go / Cobra reference with golden tests. Crib freely.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="CONTRIBUTING.md">
+        <a class="rn-card" href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">
           <span class="rn-tag">community</span>
-          <strong>Contributing</strong>
+          <strong>Contributing&nbsp;↗</strong>
           <span>Open questions, registry proposals, and how to file feedback.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
@@ -670,11 +670,11 @@ and implement agent-help in this CLI.</code></pre>
       <div class="foot-col">
         <p class="foot-heading">Specification</p>
         <ul>
-          <li><a href="AHF-RFC.md">AHF Draft v0.1</a></li>
-          <li><a href="CONFORMANCE.md">Conformance levels</a></li>
-          <li><a href="VERSIONING.md">Versioning policy</a></li>
+          <li><a href="spec.html">AHF Draft v0.1</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
           <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
-          <li><a href="CHANGELOG.md">Changelog</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
         </ul>
       </div>
 
@@ -686,18 +686,18 @@ and implement agent-help in this CLI.</code></pre>
           <li><a href="SKILL.md">SKILL.md</a></li>
           <li><a href="agent-help.ahf">agent-help.ahf</a></li>
           <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
-          <li><a href="prompts.md">Prompts</a></li>
+          <li><a href="prompts.html">Prompts</a></li>
         </ul>
       </div>
 
       <div class="foot-col">
         <p class="foot-heading">For implementers</p>
         <ul>
-          <li><a href="docs/IMPLEMENTATION_GUIDES.md">Framework guides</a></li>
-          <li><a href="docs/ADOPTER_CHECKLIST.md">Adopter checklist</a></li>
-          <li><a href="docs/PARSING.md">Parsing notes</a></li>
-          <li><a href="docs/PRIOR_ART.md">Prior art</a></li>
-          <li><a href="docs/RELEASE_CHECKLIST.md">Release checklist</a></li>
+          <li><a href="docs/implementation-guides.html">Framework guides</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/RELEASE_CHECKLIST.md" rel="noopener">Release checklist ↗</a></li>
           <li><a href="impl/">Reference implementation</a></li>
           <li><a href="examples/">Examples</a></li>
         </ul>
@@ -706,11 +706,10 @@ and implement agent-help in this CLI.</code></pre>
       <div class="foot-col">
         <p class="foot-heading">Project</p>
         <ul>
-          <li><a href="README.md">README</a></li>
-          <li><a href="FAQ.md">FAQ</a></li>
-          <li><a href="CONTRIBUTING.md">Contributing</a></li>
-          <li><a href="CODE_OF_CONDUCT.md">Code of conduct</a></li>
-          <li><a href="SECURITY.md">Security policy</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of conduct ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
           <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
           <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
         </ul>
