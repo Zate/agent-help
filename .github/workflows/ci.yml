@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    name: Verify repo
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: impl
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: impl/go.mod
+          cache-dependency-path: impl/go.sum
+
+      - name: Test
+        working-directory: .
+        run: make test

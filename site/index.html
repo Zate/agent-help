@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>agent-help — Agent-native CLIs</title>
+  <meta name="description" content="agent-help is an open convention for building CLIs that AI agents can discover and use directly.">
+  <link rel="canonical" href="https://zate.github.io/agent-help/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="agent-help — Agent-native CLIs">
+  <meta property="og:description" content="An open convention for CLIs that AI agents can discover and use directly.">
+  <meta property="og:url" content="https://zate.github.io/agent-help/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="agent-help — Agent-native CLIs">
+  <meta name="twitter:description" content="An open convention for CLIs that AI agents can discover and use directly.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Draft v0.1 · Open Convention</p>
+        <h1>agent-help</h1>
+        <p class="subtitle">Build CLIs that agents can use natively.</p>
+        <p class="lede">A tiny command-line convention for discovery, invocation, and dense runtime output. No server, plugin, or middleware required for the basic path.</p>
+        <div class="actions">
+          <a class="button primary" href="AHF-RFC.md">Read the spec</a>
+          <a class="button" href="#for-agents">Use with an agent</a>
+        </div>
+      </div>
+      <pre class="terminal hero-terminal"><code>human:    tool --help
+software: tool --json
+agent:    tool --agent-help
+agent:    tool search query --agent-out</code></pre>
+    </section>
+
+    <section class="strip">
+      <h2>The missing third output mode</h2>
+      <div class="grid three">
+        <article><span class="kicker">01</span><h3>Humans</h3><p>Use prose, tables, color, and examples.</p><code>--help</code></article>
+        <article><span class="kicker">02</span><h3>Software</h3><p>Use strict serialization and parsers.</p><code>--json</code></article>
+        <article><span class="kicker">03</span><h3>Agents</h3><p>Use compact, line-oriented, action-ready text.</p><code>--agent-help / --agent-out</code></article>
+      </div>
+    </section>
+
+    <section class="flow">
+      <h2>How discovery works</h2>
+      <div class="steps">
+        <article><span>1</span><p>Agent sees the breadcrumb in normal <code>--help</code>.</p></article>
+        <article><span>2</span><p>Agent runs <code>tool --agent-help</code> for an AH1 command index.</p></article>
+        <article><span>3</span><p>Agent runs <code>tool subcmd --agent-help</code> for AH2 invocation detail.</p></article>
+        <article><span>4</span><p>Agent calls <code>--agent-out</code> for dense structured results.</p></article>
+      </div>
+    </section>
+
+    <section id="for-agents" class="agent-panel">
+      <div>
+        <p class="eyebrow">Agent entry points</p>
+        <h2>Point your agent at the raw docs.</h2>
+        <p>These files are intentionally terse. They are for agents first; the human site is only the landing page.</p>
+      </div>
+      <div class="agent-grid">
+        <article>
+          <h3>Orientation</h3>
+          <p>Small index for agents discovering the project.</p>
+          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt</code></pre>
+          <a href="llms.txt">View llms.txt</a>
+        </article>
+        <article>
+          <h3>Full Brief</h3>
+          <p>Give this to an agent before asking it to implement agent-help.</p>
+          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt</code></pre>
+          <a href="llms-full.txt">View llms-full.txt</a>
+        </article>
+        <article>
+          <h3>Skill</h3>
+          <p>Use this on platforms that support skill-style instructions.</p>
+          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md</code></pre>
+          <a href="SKILL.md">View SKILL.md</a>
+        </article>
+        <article>
+          <h3>AHF Docs</h3>
+          <p>AHF-style docs for the docs themselves.</p>
+          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf</code></pre>
+          <a href="agent-help.ahf">View agent-help.ahf</a>
+        </article>
+      </div>
+      <div class="prompt-card">
+        <h3>Prompt to try</h3>
+        <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and explain what agent-help is for.</code></pre>
+        <a href="prompts.md">More prompts</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Two layers, one convention</h2>
+      <div class="grid two">
+        <article>
+          <h3>AHF — Agent Help Format</h3>
+          <p>The line-record spec for <code>--agent-help</code> output: command index (AH1), command detail (AH2), errors, follow-up commands.</p>
+          <pre><code>ah1 tool :: example CLI
+cmd search &lt;query&gt; [--limit int] :: search
+cmd show &lt;id&gt; :: show one record
+more? tool &lt;cmd&gt; --agent-help</code></pre>
+        </article>
+        <article>
+          <h3>TOON — result bodies</h3>
+          <p><code>--agent-out</code> emits an AHF status line, then a <a href="https://github.com/toon-format/spec">TOON</a> result body. Each format does its job.</p>
+          <pre><code>ok nodes count=2 more=0
+nodes[#2]{id,type,tags,text}:
+  n_102,fact,project:billing,postgres 15 required
+  n_088,decision,project:billing,migrate read model
+next inspect "tool show n_102 --agent-out"</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="callout">
+      <h2>Discovery breadcrumb</h2>
+      <p>Add a short pointer to normal <code>--help</code> output so agents can find the rest:</p>
+      <pre><code>LLM agent? Use --agent-help for token-optimized usage.</code></pre>
+    </section>
+
+    <section>
+      <h2>Framework notes</h2>
+      <div class="pill-list">
+        <a href="docs/IMPLEMENTATION_GUIDES.md">Cobra</a>
+        <a href="docs/IMPLEMENTATION_GUIDES.md">Click</a>
+        <a href="docs/IMPLEMENTATION_GUIDES.md">argparse</a>
+        <a href="docs/IMPLEMENTATION_GUIDES.md">Clap</a>
+        <a href="docs/IMPLEMENTATION_GUIDES.md">Commander</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Start here</h2>
+      <div class="links">
+        <a href="AHF-RFC.md"><strong>Specification</strong><span>Read the AHF draft.</span></a>
+        <a href="llms.txt"><strong>llms.txt</strong><span>Point an agent here first.</span></a>
+        <a href="llms-full.txt"><strong>Implementation brief</strong><span>Ask an agent to implement from this.</span></a>
+        <a href="agent-help.ahf"><strong>AHF docs</strong><span>Docs in the convention's own shape.</span></a>
+        <a href="prompts.md"><strong>Prompts</strong><span>Copy prompts for coding agents.</span></a>
+        <a href="docs/ADOPTER_CHECKLIST.md"><strong>Adopter checklist</strong><span>Track implementation readiness.</span></a>
+        <a href="examples/"><strong>Examples</strong><span>Inspect concrete outputs.</span></a>
+      </div>
+    </section>
+
+    <footer>
+      <p>agent-help is an open convention. Code licensed <a href="LICENSE">Apache 2.0</a>. Specification licensed <a href="LICENSE-DOCS">CC-BY-4.0</a>. <a href="https://github.com/Zate/agent-help">GitHub</a></p>
+    </footer>
+  </main>
+</body>
+</html>

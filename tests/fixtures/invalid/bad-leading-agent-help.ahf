@@ -1,0 +1,3 @@
+ah2 mem node list
+use mem node list [--limit int]
+ex mem --agent-help node list

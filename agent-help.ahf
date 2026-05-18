@@ -1,0 +1,7 @@
+ah1 agent-help :: open convention for agent-native CLI discovery and output
+cmd explain [--full bool] :: explain what agent-help is for
+cmd implement <repo> [--framework enum(cobra|click|argparse|clap|commander|other)] :: add agent-help to a CLI
+cmd reference prefixes :: show AHF record prefixes
+cmd reference types :: show AHF scalar types
+cmd examples [--kind enum(help|out|error|pagination)] :: inspect example outputs
+more? agent-help <cmd> --agent-help

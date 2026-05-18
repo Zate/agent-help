@@ -1,0 +1,6 @@
+ah2 mem node add
+use mem node add <text> --type TYPE [--tag K:V...]
+arg text:str req :: node text
+flag --type:enum(decision|fact|pattern|observation) req :: node type
+flag --tag:kv repeat :: metadata
+ex mem node add "postgres 15" --type fact --tag project:myapp

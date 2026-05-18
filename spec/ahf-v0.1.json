@@ -1,0 +1,74 @@
+{
+  "name": "Agent Help Format",
+  "short_name": "AHF",
+  "version": "0.1",
+  "status": "draft",
+  "canonical_url": "https://zate.github.io/agent-help/AHF-RFC.md",
+  "repository": "https://github.com/Zate/agent-help",
+  "surfaces": {
+    "help": {
+      "flag": "--agent-help",
+      "placement": "trailing global",
+      "root_shape": "AH1",
+      "command_shape": "AH2"
+    },
+    "runtime": {
+      "flag": "--agent-out",
+      "envelope": "AHF",
+      "structured_body": "TOON"
+    }
+  },
+  "record_prefixes": [
+    {"prefix": "ah1", "meaning": "agent-help index", "context": "root --agent-help"},
+    {"prefix": "ah2", "meaning": "agent-help detail", "context": "subcommand --agent-help"},
+    {"prefix": "ok", "meaning": "success status", "context": "--agent-out envelope"},
+    {"prefix": "err", "meaning": "error status", "context": "any agent-facing error"},
+    {"prefix": "warn", "meaning": "non-fatal warning", "context": "--agent-out envelope"},
+    {"prefix": "cmd", "meaning": "command entry", "context": "AH1"},
+    {"prefix": "use", "meaning": "canonical invocation", "context": "AH2 or error"},
+    {"prefix": "arg", "meaning": "positional argument definition", "context": "AH2"},
+    {"prefix": "flag", "meaning": "flag definition", "context": "AH2"},
+    {"prefix": "ex", "meaning": "valid example invocation", "context": "AH2"},
+    {"prefix": "hint", "meaning": "direct correction", "context": "after err"},
+    {"prefix": "next", "meaning": "follow-up or continuation command", "context": "after ok or err"},
+    {"prefix": "more?", "meaning": "pointer to AH2 detail; not a shell command", "context": "AH1"}
+  ],
+  "scalar_types": [
+    {"type": "str", "meaning": "free text string"},
+    {"type": "int", "meaning": "integer"},
+    {"type": "num", "meaning": "float"},
+    {"type": "bool", "meaning": "true or false"},
+    {"type": "path", "meaning": "filesystem path"},
+    {"type": "url", "meaning": "URL"},
+    {"type": "id", "meaning": "opaque identifier"},
+    {"type": "ts", "meaning": "Unix timestamp"},
+    {"type": "date", "meaning": "ISO 8601 date"},
+    {"type": "dur", "meaning": "duration string"},
+    {"type": "kv", "meaning": "key:value pair"},
+    {"type": "enum(a|b)", "meaning": "one of the listed values"}
+  ],
+  "conformance_levels": [
+    "agent-help-core",
+    "agent-help-runtime",
+    "agent-help-full"
+  ],
+  "examples": {
+    "ah1": [
+      "ah1 mem :: project memory — store and query facts, decisions, and tasks",
+      "cmd node list [--type TYPE] [--limit int] [--cursor id] :: list memory nodes",
+      "more? mem <cmd> --agent-help"
+    ],
+    "ah2": [
+      "ah2 mem node list",
+      "use mem node list [--type TYPE] [--limit int] [--cursor id]",
+      "flag --cursor:id opt :: resume after the given node ID"
+    ],
+    "agent_out": [
+      "ok nodes count=8 shown=3 more=1 cursor=c_n_104",
+      "warn truncated shown=3 total=8",
+      "nodes[#3]{id,type,tags,text}:",
+      "next \"mem node list --limit 3 --cursor c_n_104 --agent-out\""
+    ]
+  }
+}
+

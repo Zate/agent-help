@@ -1,0 +1,55 @@
+# agent-help
+
+agent-help is an open convention for building CLIs that work natively with AI agents.
+
+Homepage: https://zate.github.io/agent-help
+Specification: https://zate.github.io/agent-help/AHF-RFC.md
+Repository: https://github.com/Zate/agent-help
+
+Use this file to orient an LLM agent. Use llms-full.txt when asking an agent to implement agent-help in a CLI.
+
+Core idea:
+- humans: default output and --help
+- software: --json
+- agents: --agent-help and --agent-out
+
+agent-help lets agents use any conforming CLI directly. MCP servers, skills, and plugins can still wrap that CLI, but the CLI itself carries the discovery and invocation surface an agent needs.
+
+Two layers:
+- AHF (Agent Help Format): the line-record spec for --agent-help output and ok/err protocol envelope
+- TOON: the recommended encoding for --agent-out result bodies
+
+Implementation brief:
+- Read https://zate.github.io/agent-help/llms-full.txt
+
+Full specification:
+- Read https://zate.github.io/agent-help/AHF-RFC.md
+
+TOON spec (for --agent-out result bodies):
+- Read https://github.com/toon-format/spec
+
+Examples:
+- Read https://zate.github.io/agent-help/examples/
+
+AHF docs:
+- Read https://zate.github.io/agent-help/agent-help.ahf
+- Read https://zate.github.io/agent-help/agent-help-full.ahf
+
+Core CLI convention:
+- tool --help points agents to --agent-help.
+- tool --agent-help returns AHF command index (AH1).
+- tool subcmd --agent-help returns AHF command detail (AH2).
+- --agent-help is trailing in documented examples.
+
+Recommended CLI convention:
+- tool subcmd args --agent-out returns ok/err envelope + TOON result body.
+
+AHF shape (--agent-help output):
+- one record per line; first token is record type
+- ah1/cmd/more? for index; ah2/use/arg/flag/ex for detail
+- err/hint/use for errors; next for follow-up commands
+
+--agent-out shape:
+- ok <kind> [key=value...] — AHF status line
+- TOON block — result body (see toon-format/spec)
+- next "..." — AHF follow-up record

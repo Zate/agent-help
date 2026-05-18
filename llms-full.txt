@@ -1,0 +1,311 @@
+# agent-help implementation brief for LLM agents
+
+Use this brief when a user asks you to make a CLI agent-native, implement agent-help, add --agent-help, add --agent-out, or make command output easier for AI agents to consume.
+
+Goal: implement agent-native CLI surfaces without breaking human or software output.
+
+Audience split:
+- humans: default output and --help
+- software: --json
+- agents: --agent-help and --agent-out
+
+Do not replace --json. agent-help is for agents, not software integrations.
+
+Two layers:
+- AHF (Agent Help Format): defines --agent-help output and the ok/err protocol envelope for --agent-out
+- TOON: defines --agent-out result bodies. See https://github.com/toon-format/spec
+
+## Core recommendation: --agent-help
+
+Implement --agent-help for non-trivial CLIs where agents need to discover commands and construct invocations.
+
+Flag rule:
+- --agent-help is a trailing global flag.
+- valid: tool --agent-help
+- valid: tool subcmd --agent-help
+- valid: tool group subcmd --agent-help
+- invalid: tool --agent-help subcmd
+- invalid: tool --agent-help group subcmd
+
+Add this breadcrumb, or an equivalent pointer, to normal human --help output:
+LLM agent? Use --agent-help for token-optimized usage.
+
+Discovery flow:
+1. Agent runs: tool --help
+2. Agent sees breadcrumb.
+3. Agent runs: tool --agent-help
+4. Agent picks a command from AH1 index.
+5. Agent runs: tool subcmd --agent-help
+6. Agent reads AH2 detail and invokes command correctly.
+
+## Recommended: --agent-out
+
+Implement --agent-out for commands that return structured runtime results: lists, records, search results, statuses, IDs, summaries, logs, diagnostics, or anything an agent may need to inspect or act on.
+
+Output shape:
+- Line 1: AHF ok/err status line (always AHF)
+- Lines 2+: TOON result body (see below)
+- Final lines: AHF next/hint records as needed
+
+Do not emit human tables, markdown tables, color, decorative headings, prose paragraphs, or JSON for --agent-out.
+
+## AHF syntax (for --agent-help output and --agent-out envelope)
+
+AHF is dense text for LLM agents.
+
+Rules:
+- UTF-8 plain text; ASCII preferred.
+- One record per line.
+- First token is record type.
+- key=value for metadata.
+- Quote only values containing whitespace or reserved delimiters.
+- Use _ for null, unknown, or not applicable.
+- Use | for short lists inside one field.
+- Include exact next commands for pagination, inspection, or recommended follow-up.
+- Output should remain useful if truncated after any line.
+
+AHF record prefixes:
+- ah1: agent-help index (root --agent-help)
+- ah2: agent-help command detail (subcmd --agent-help)
+- ok: successful runtime status line
+- err: error status line
+- warn: non-fatal warning (after ok, before TOON body)
+- cmd: command entry in AH1
+- use: canonical invocation in AH2
+- arg: positional argument definition in AH2
+- flag: flag definition in AH2
+- ex: valid example invocation in AH2
+- hint: direct correction after err
+- next: exact continuation or recommended follow-up command
+- more?: pointer to AH2 detail in AH1 output; not a shell command
+
+Scalar types (used in arg and flag records):
+- str: string
+- int: integer
+- num: number
+- bool: true/false
+- path: filesystem path
+- url: URL
+- id: opaque identifier
+- ts: timestamp
+- date: calendar date
+- dur: duration such as 30s, 5m, 2h, 7d
+- kv: key:value
+- enum(a|b): one value from listed options
+
+## --agent-help AH1 index format
+
+Returned by: tool --agent-help
+
+Format:
+ah1 <tool> :: <purpose>
+cmd <command-signature> :: <purpose>
+cmd <group> <command-signature> :: <purpose>
+more? <tool> <cmd> --agent-help
+
+Rules:
+- One cmd line per invocable command.
+- Flatten nested commands into command paths.
+- Include required args inline.
+- Include only highest-value optional flags.
+- No aliases, author, version, prose, examples, or detailed flag docs.
+- Sort by likely agent usage if known.
+- Target under 300 tokens.
+- more? is a pointer record, not a shell command. The ? signals "want more information?".
+
+Example:
+ah1 mem :: project memory for agents
+cmd node add <text> --type TYPE [--tag K:V...] :: store node
+cmd node list [--type TYPE] [--limit int] :: list nodes
+cmd search query <search> [--type TYPE] [--limit int] :: search nodes
+more? mem <cmd> --agent-help
+
+## --agent-help AH2 command detail format
+
+Returned by: tool subcmd --agent-help
+
+Format:
+ah2 <tool> <command-path>
+use <canonical invocation>
+arg <name>:<type> <req|opt> :: <purpose>
+flag --<name>:<type> <req|opt|repeat> [default=<value>] :: <purpose>
+ex <valid example invocation>
+
+Rules:
+- Include required args and required flags.
+- Include optional flags that materially change behavior.
+- State defaults only when non-obvious.
+- Use repeat for repeatable flags.
+- Every ex should work as written; omit examples that may drift.
+- Target under 150 tokens.
+
+Example:
+ah2 mem node add
+use mem node add <text> --type TYPE [--tag K:V...]
+arg text:str req :: node text
+flag --type:enum(decision|fact|pattern|observation) req :: node type
+flag --tag:kv repeat :: metadata
+ex mem node add "postgres 15" --type fact --tag project:myapp
+
+## Error hint format
+
+Use for invalid invocations and runtime errors.
+
+Format:
+err <code> [key=value...]
+hint <direct correction>
+use <canonical invocation if useful>
+
+Rules:
+- Do not respond only with run --help.
+- For enum errors, list valid values.
+- For missing flags, show exact flag and type.
+- Include use when it prevents another help call.
+- Target under 50 tokens.
+- For complex error payloads, use a TOON body after err instead of hint/use lines.
+
+Example:
+err missing_flag flag=--type
+hint --type enum(decision|fact|pattern|observation)
+use mem node add <text> --type TYPE
+
+## --agent-out output format
+
+### Status envelope (always AHF)
+
+Success:
+ok <kind> [count=<n>] [more=<0|1>] [cursor=<val>] [shown=<n>]
+
+Error:
+err <code> [key=value...]
+
+Warning (non-fatal, after ok):
+warn <code> [key=value...]
+
+### Result body (TOON)
+
+After the ok line, emit a TOON block. See https://github.com/toon-format/spec for full TOON syntax.
+
+TOON format rules (from toon-go reference implementation):
+- Length marker uses [#N] syntax, not [N].
+- Rows are two-space indented.
+- Values are quoted only when they contain commas or spaces.
+- Go library: github.com/toon-format/toon-go
+
+List example:
+ok nodes count=3 more=0
+nodes[#3]{id,type,tags,text}:
+  n_102,fact,"project:billing|db",postgres 15 required
+  n_088,decision,project:billing,migrate read model
+  n_061,pattern,db|ops,use connection pool max 20
+next inspect "mem search similar n_102 --agent-out"
+
+Paginated list example:
+ok builds count=5 shown=3 more=1 cursor=c_9f2
+warn partial_results source=ci-east reason=timeout
+builds[#3]{id,branch,status,duration}:
+  b_771,main,pass,2m14s
+  b_770,feature/ahf,pass,3m02s
+  b_769,feature/ahf,fail,1m33s
+next "builds list --cursor c_9f2 --agent-out"
+next inspect-failure "builds show b_769 --agent-out"
+
+### When TOON is insufficient
+
+For bare scalar acknowledgements with no structured data, AHF key-value lines MAY follow ok:
+ok deploy
+env prod
+status healthy
+next logs "tool logs --env prod --agent-out"
+
+### Follow-up commands
+
+next records MAY include a label:
+next "tool list --cursor c_123 --agent-out"
+next inspect "tool show n_102 --agent-out"
+
+When more=1 or truncated=1, include an exact continuation command in a next record.
+
+## Implementation checklist
+
+Do:
+- Derive --agent-help from CLI command metadata when possible.
+- Keep --agent-help synchronized with actual command behavior.
+- Test that every AH1 cmd has AH2 output.
+- Test that every AH2 ex works as written or remove it.
+- Test required args and flags in AH2 match actual validation.
+- Keep AHF field names and order stable across releases when possible.
+- Include exact continuation commands for pagination or truncation.
+- Redact secrets, tokens, credentials, and unnecessary personal data.
+- Emit TOON for --agent-out result bodies.
+
+Avoid:
+- Put --agent-help before subcommands.
+- Emit JSON for --agent-help or --agent-out unless the user explicitly requested JSON.
+- Emit markdown tables as agent output.
+- Use long prose paragraphs in agent output.
+- Tell an agent only to run --help after an error.
+- Hand-maintain stale command lists if framework metadata is available.
+
+## Framework hints
+
+Cobra:
+- Add hidden persistent/global bool flags agent-help and agent-out.
+- Resolve current command after parsing.
+- Print AH1 for root; AH2 for subcommands.
+- Generate from Command.Use, args, flags, annotations.
+- For --agent-out, emit ok envelope then TOON.
+- TOON library for Go: github.com/toon-format/toon-go
+- Args bypass pattern: commands with required positional args must not block
+  --agent-help. Use a custom Args validator:
+
+  Args: func(cmd *cobra.Command, args []string) error {
+      if agentHelp {
+          return nil  // --agent-help needs no positional args
+      }
+      return cobra.ExactArgs(1)(cmd, args)
+  },
+
+  This ensures "tool subcmd --agent-help" always works. Apply to every
+  command that uses ExactArgs, MinimumNArgs, or similar validators.
+  The same principle applies in all frameworks: --agent-help is a meta-flag
+  and must never be blocked by the command's own argument requirements.
+
+Click:
+- Add hidden eager global options.
+- Use context command path to choose AH1 vs AH2.
+- Generate from Command.params, argument metadata, option metadata.
+- Args bypass: eager options fire before argument validation — no extra work needed.
+
+Clap:
+- Add hidden global args.
+- Intercept after parse before command execution.
+- Generate from Command::get_subcommands() and get_arguments().
+- Args bypass: check for --agent-help in a pre-execution hook before validation.
+
+Commander:
+- Add global options.
+- Use preAction hooks.
+- Generate from commands/options metadata.
+- Args bypass: preAction hook fires before argument validation — check there.
+
+Argparse or other:
+- Add global flags.
+- Generate from parser/subparser/action metadata.
+- Avoid independent handwritten specs when metadata exists.
+- Args bypass: use parse_known_args() then check for --agent-help before
+  enforcing required positional arguments.
+
+TOON libraries (for --agent-out result bodies):
+- Go:     github.com/toon-format/toon-go
+- See https://github.com/toon-format/spec for other languages.
+
+## Completion checklist
+
+Before finishing:
+- tool --help shows breadcrumb.
+- tool --agent-help returns AH1.
+- tool subcmd --agent-help returns AH2 for every command.
+- Invalid invocations return err/hint/use.
+- Structured result commands support --agent-out with ok envelope + TOON body.
+- Tests cover help accuracy and at least one --agent-out result.

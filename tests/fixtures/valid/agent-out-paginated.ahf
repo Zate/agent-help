@@ -1,0 +1,7 @@
+ok nodes count=8 shown=3 more=1 cursor=c_n_104
+warn truncated shown=3 total=8
+nodes[#3]{id,type,text}:
+  n_101,fact,alpha
+  n_102,fact,beta
+  n_103,fact,gamma
+next "mem node list --limit 3 --cursor c_n_104 --agent-out"

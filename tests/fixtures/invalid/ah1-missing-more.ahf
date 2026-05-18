@@ -1,0 +1,2 @@
+ah1 mem :: project memory for agents
+cmd node list [--limit int] :: list nodes

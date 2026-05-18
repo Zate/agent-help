@@ -1,0 +1,3 @@
+ah2 mem node list
+flag --limit:int opt default=20 :: max rows
+ex mem node list --limit 5

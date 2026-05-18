@@ -1,0 +1,23 @@
+ah2 agent-help explain
+use agent-help explain [--full bool]
+flag --full:bool opt default=false :: include implementation details and tradeoffs
+ex agent-help explain --full
+
+ah2 agent-help implement
+use agent-help implement <repo> [--framework FRAMEWORK]
+arg repo:path req :: local CLI repository to modify
+flag --framework:enum(cobra|click|argparse|clap|commander|other) opt :: known CLI framework
+ex agent-help implement . --framework cobra
+
+ah2 agent-help reference prefixes
+use agent-help reference prefixes
+ex agent-help reference prefixes
+
+ah2 agent-help reference types
+use agent-help reference types
+ex agent-help reference types
+
+ah2 agent-help examples
+use agent-help examples [--kind KIND]
+flag --kind:enum(help|out|error|pagination) opt :: filter examples by scenario
+ex agent-help examples --kind out

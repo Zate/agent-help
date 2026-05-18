@@ -1,0 +1,4 @@
+ah1 mem :: project memory for agents
+cmd node add <text> --type TYPE [--tag K:V...] :: store node
+cmd node list [--type TYPE] [--limit int] :: list nodes
+more? mem <cmd> --agent-help

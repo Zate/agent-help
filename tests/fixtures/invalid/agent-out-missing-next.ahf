@@ -1,0 +1,3 @@
+ok nodes count=8 shown=3 more=1 cursor=c_n_104
+nodes[#3]{id,type,text}:
+  n_101,fact,alpha
