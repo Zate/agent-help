@@ -6,18 +6,18 @@ Use this checklist before tagging or publicly announcing a repository release.
 
 1. Confirm the intended AHF draft version.
 2. Review open issues for release blockers.
-3. Confirm `VERSIONING.md` still describes the release policy.
+3. Confirm `docs/VERSIONING.md` still describes the release policy.
 
 ## Sync Checks
 
 1. If `AHF-RFC.md` changed, verify corresponding updates in:
    - `llms.txt`
    - `llms-full.txt`
-   - `SKILL.md`
+   - `.agents/skills/ahf/SKILL.md`
    - `references/REFERENCE.md`
    - `examples/`
    - `spec/ahf-v0.1.json`
-   - `CONFORMANCE.md`
+   - `docs/CONFORMANCE.md`
 2. If record prefixes changed, update every registry table and manifest.
 3. If scalar types changed, update every scalar type table and manifest.
 4. If `--agent-out` shape changed, update examples and golden tests.

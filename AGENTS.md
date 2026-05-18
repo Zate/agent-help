@@ -22,10 +22,10 @@ Specifically:
 |---|---|
 | Record prefix registry (§9) | `llms-full.txt` AHF record prefixes list, `references/REFERENCE.md` prefix table |
 | Scalar type registry (§10) | `llms-full.txt` types list, `references/REFERENCE.md` scalar types table |
-| AH1 format or rules (§11.1) | `llms-full.txt` AH1 section, `SKILL.md` AH1 section, examples/01-* |
-| AH2 format or rules (§11.2) | `llms-full.txt` AH2 section, `SKILL.md` AH2 section, examples/02-* |
-| Error format (§13) | `llms-full.txt` error hint section, `SKILL.md` AE1 section, examples/03-* |
-| `--agent-out` envelope (§12) | `llms-full.txt` --agent-out section, `SKILL.md`, examples/04-* 05-* 06-* |
+| AH1 format or rules (§11.1) | `llms-full.txt` AH1 section, `.agents/skills/ahf/SKILL.md` AH1 section, examples/01-* |
+| AH2 format or rules (§11.2) | `llms-full.txt` AH2 section, `.agents/skills/ahf/SKILL.md` AH2 section, examples/02-* |
+| Error format (§13) | `llms-full.txt` error hint section, `.agents/skills/ahf/SKILL.md` AE1 section, examples/03-* |
+| `--agent-out` envelope (§12) | `llms-full.txt` --agent-out section, `.agents/skills/ahf/SKILL.md`, examples/04-* 05-* 06-* |
 | TOON delegation rules (§12) | `llms-full.txt` TOON section, `references/REFERENCE.md` |
 | Pagination/truncation (§14) | `llms-full.txt` follow-up commands section, examples/06-* |
 | Conformance requirements (§15) | `llms-full.txt` implementation requirements section |
@@ -39,11 +39,11 @@ Specifically:
 | `AHF-RFC.md` | Full normative AHF spec | Spec readers, implementers |
 | `llms.txt` | Short orientation (~50 lines) | Agents discovering what agent-help is |
 | `llms-full.txt` | Full implementation brief | Agents implementing agent-help in a CLI |
-| `SKILL.md` | agentskills.io-compatible build skill | Agents using skill-aware platforms |
+| `.agents/skills/ahf/SKILL.md` | agentskills.io-compatible build skill | Agents using skill-aware platforms |
 | `FAQ.md` | Conversational "why agent-help?" | Skeptical humans, first-time visitors |
 | `references/REFERENCE.md` | Quick-reference card | Agents needing a registry lookup |
 | `examples/` | Annotated output samples | Agents and implementers |
-| `CONFORMANCE.md` | Conformance levels | Implementers |
+| `docs/CONFORMANCE.md` | Conformance levels | Implementers |
 | `spec/ahf-v0.1.json` | Machine-readable spec manifest | Tooling, validators |
 | `docs/PARSING.md` | Practical parsing notes | Implementers |
 | `docs/PRIOR_ART.md` | Related work and positioning | Humans, reviewers |
@@ -51,7 +51,7 @@ Specifically:
 | `SECURITY.md` | Security reporting and redaction guidance | Humans, implementers |
 | `site/` | Static landing page source | Web visitors |
 | `Makefile` | Local verification entrypoint | Contributors |
-| `VERSIONING.md` | Draft stability and release policy | Implementers, contributors |
+| `docs/VERSIONING.md` | Draft stability and release policy | Implementers, contributors |
 | `LICENSE-DOCS` | Documentation/spec license | Humans, legal review |
 | `NOTICE` | Project notices and license split | Humans, legal review |
 
@@ -88,4 +88,4 @@ Do not hardcode other URLs without updating both.
 - [ ] `references/REFERENCE.md` tables still match the registries?
 - [ ] Examples in `examples/` still valid per the current spec?
 - [ ] `FAQ.md` still accurate?
-- [ ] `SKILL.md` still consistent with the spec?
+- [ ] `.agents/skills/ahf/SKILL.md` still consistent with the spec?

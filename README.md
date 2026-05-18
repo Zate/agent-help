@@ -10,7 +10,7 @@
 
 ---
 
-> **Draft status:** agent-help/AHF is currently Draft v0.1. The wire shape is ready for trial implementations, but naming details and conformance levels may change before v1.0. Treat early integrations as experimental. See [`VERSIONING.md`](VERSIONING.md) and [`CHANGELOG.md`](CHANGELOG.md).
+> **Draft status:** agent-help/AHF is currently Draft v0.1. The wire shape is ready for trial implementations, but naming details and conformance levels may change before v1.0. Treat early integrations as experimental. See [`VERSIONING.md`](docs/docs/VERSIONING.md) and [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
@@ -52,7 +52,7 @@ For an agent, point it directly at the raw files:
 
 - `https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt`
 - `https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt`
-- `https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md`
+- `https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md`
 
 Useful prompts:
 
@@ -67,7 +67,7 @@ Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and im
 If your agent supports skills, point it at:
 
 ```text
-https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md
+https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md
 ```
 
 These files are intentionally optimized for agents. They may feel terse to humans; that is the point.
@@ -135,7 +135,7 @@ more? tool <cmd> --agent-help
 |---|---|
 | [`AHF-RFC.md`](AHF-RFC.md) | Full AHF draft specification (Internet-Draft style) |
 | [`FAQ.md`](FAQ.md) | Why agent-help? How does AHF relate to TOON, JSON, MCP? |
-| [`SKILL.md`](SKILL.md) | agentskills.io-compatible skill for implementing agent-help |
+| [`.agents/skills/ahf/SKILL.md`](.agents/skills/ahf/SKILL.md) | agentskills.io-compatible skill for implementing agent-help |
 | [`llms.txt`](llms.txt) | Short agent orientation file (point agents here first) |
 | [`llms-full.txt`](llms-full.txt) | Full implementation brief (paste to ask an agent to implement agent-help) |
 | [`agent-help.ahf`](agent-help.ahf) | AHF-style docs entry point |
@@ -143,13 +143,13 @@ more? tool <cmd> --agent-help
 | [`prompts.md`](prompts.md) | Copy/paste prompts for agents |
 | [`references/REFERENCE.md`](references/REFERENCE.md) | Quick-reference card |
 | [`examples/`](examples/) | Standalone examples for testing model comprehension |
-| [`CONFORMANCE.md`](CONFORMANCE.md) | Conformance levels for implementers |
+| [`CONFORMANCE.md`](docs/docs/CONFORMANCE.md) | Conformance levels for implementers |
 | [`spec/ahf-v0.1.json`](spec/ahf-v0.1.json) | Machine-readable registry and shape manifest |
 | [`docs/`](docs/) | Parsing notes, adopter checklist, framework notes, prior art, and release checklist |
 | [`site/`](site/) | Static landing page source |
 | [`impl/`](impl/) | Go/Cobra reference implementation with golden tests |
 | [`tests/`](tests/) | Validator fixtures for accepted and rejected AHF snippets |
-| [`VERSIONING.md`](VERSIONING.md) | Draft stability and release policy |
+| [`VERSIONING.md`](docs/docs/VERSIONING.md) | Draft stability and release policy |
 | [`CHANGELOG.md`](CHANGELOG.md) | Project change history |
 
 ---
@@ -211,7 +211,7 @@ Point your agent at `llms-full.txt` and ask it to add agent-help support:
 Read llms-full.txt and implement agent-help in this CLI.
 ```
 
-Or use the `SKILL.md` directly — it follows the [agentskills.io](https://agentskills.io) format, so any agent platform that supports skills can load it to help you build agent-help support into your CLI.
+Or use the `.agents/skills/ahf/SKILL.md` directly — it follows the [agentskills.io](https://agentskills.io) format, so any agent platform that supports skills can load it to help you build agent-help support into your CLI.
 
 ---
 
@@ -231,9 +231,9 @@ The AHF spec lives in [`AHF-RFC.md`](AHF-RFC.md). It is written in Internet-Draf
 
 ---
 
-## The `SKILL.md` in this repo
+## The `.agents/skills/ahf/SKILL.md` in this repo
 
-This repo ships a `SKILL.md` that follows the [agentskills.io](https://agentskills.io) spec format. It is a **build-time tool** — a skill for agent-assisted development that helps you implement agent-help (`--agent-help` + `--agent-out`) in your own CLI. It is not required at runtime. Once your CLI conforms, agents can use it directly with no skill file needed.
+This repo ships a `.agents/skills/ahf/SKILL.md` that follows the [agentskills.io](https://agentskills.io) spec format. It is a **build-time tool** — a skill for agent-assisted development that helps you implement agent-help (`--agent-help` + `--agent-out`) in your own CLI. It is not required at runtime. Once your CLI conforms, agents can use it directly with no skill file needed.
 
 ---
 

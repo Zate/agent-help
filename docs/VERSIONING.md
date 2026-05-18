@@ -29,8 +29,8 @@ The following may still change before `v1.0`:
 Before a repository release:
 
 1. `make test` must pass.
-2. `AHF-RFC.md`, `llms.txt`, `llms-full.txt`, `SKILL.md`, `references/REFERENCE.md`, and `examples/` must be checked for drift.
-3. `spec/ahf-v0.1.json` and `CONFORMANCE.md` must reflect registry and conformance changes.
+2. `AHF-RFC.md`, `llms.txt`, `llms-full.txt`, `.agents/skills/ahf/SKILL.md`, `references/REFERENCE.md`, and `examples/` must be checked for drift.
+3. `spec/ahf-v0.1.json` and `docs/CONFORMANCE.md` must reflect registry and conformance changes.
 4. The Go reference implementation must build and pass golden-output tests.
 5. Documented examples must match current CLI output.
 6. AHF examples must pass the lightweight validator.

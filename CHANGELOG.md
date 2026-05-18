@@ -26,4 +26,4 @@ This project is pre-1.0. The AHF wire shape is intended to remain coherent withi
 - Defined `--agent-help` AH1/AH2 records for agent-facing CLI discovery.
 - Defined `--agent-out` as an AHF protocol envelope with TOON result bodies.
 - Defined record prefix and scalar type registries.
-- Included an agent implementation brief, quick reference, examples, and build-time `SKILL.md`.
+- Included an agent implementation brief, quick reference, examples, and build-time `.agents/skills/ahf/SKILL.md`.

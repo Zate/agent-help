@@ -15,7 +15,7 @@
 - [ ] `AHF-RFC.md` updated if normative behavior changed
 - [ ] `llms-full.txt` updated if implementation guidance changed
 - [ ] `llms.txt` updated if the high-level shape changed
-- [ ] `SKILL.md` updated if build-skill guidance changed
+- [ ] `.agents/skills/ahf/SKILL.md` updated if build-skill guidance changed
 - [ ] `references/REFERENCE.md` updated if registries changed
 - [ ] `examples/` updated if output shape changed
 - [ ] `spec/ahf-v0.1.json` updated if registries or conformance levels changed

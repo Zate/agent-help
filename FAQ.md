@@ -107,7 +107,7 @@ No. AHF is a text convention, not a library. TOON is simple enough to emit witho
 
 ## What's the relationship to agentskills.io?
 
-[agentskills.io](https://agentskills.io) defines a standard format for packaging reusable agent capabilities as skills (a `SKILL.md` file with YAML frontmatter and instructions). This repo ships a `SKILL.md` that follows that format — it's a **build-time development tool** that helps you implement agent-help in your own CLI using an agent assistant.
+[agentskills.io](https://agentskills.io) defines a standard format for packaging reusable agent capabilities as skills (a `.agents/skills/ahf/SKILL.md` file with YAML frontmatter and instructions). This repo ships a `.agents/skills/ahf/SKILL.md` that follows that format — it's a **build-time development tool** that helps you implement agent-help in your own CLI using an agent assistant.
 
 agent-help itself has no dependency on agentskills.io. Once your CLI conforms, agents can use it directly with no skill file, MCP server, or any other runtime component.
 

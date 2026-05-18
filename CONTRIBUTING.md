@@ -28,7 +28,7 @@ For substantive spec changes, please open an issue first so the change can be di
 - [ ] If adding a new scalar type, update §10 (Scalar Type Registry) in `AHF-RFC.md`
 - [ ] If changing registries, update `spec/ahf-v0.1.json` and run `make check-drift`
 - [ ] If changing public behavior, update `CHANGELOG.md`
-- [ ] SKILL.md stays under 500 lines (move detail to `references/` if needed)
+- [ ] .agents/skills/ahf/SKILL.md stays under 500 lines (move detail to `references/` if needed)
 
 ## Local Verification
 
@@ -59,7 +59,7 @@ See [§21 of the spec](AHF-RFC.md#21-open-questions) for context on each questio
 
 ## Versioning
 
-See [VERSIONING.md](VERSIONING.md) for the full draft stability and release policy. In short, AHF follows a simple versioning scheme:
+See [VERSIONING.md](docs/docs/VERSIONING.md) for the full draft stability and release policy. In short, AHF follows a simple versioning scheme:
 
 - **Patch** (v0.1.x) — errata, clarifications, no normative changes
 - **Minor** (v0.x) — new optional features, backward-compatible

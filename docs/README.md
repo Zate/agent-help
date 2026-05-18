@@ -10,8 +10,8 @@
 Primary project documents:
 
 - [Specification](../AHF-RFC.md)
-- [Conformance Levels](../CONFORMANCE.md)
-- [Versioning](../VERSIONING.md)
+- [Conformance Levels](CONFORMANCE.md)
+- [Versioning](VERSIONING.md)
 - [Changelog](../CHANGELOG.md)
 - [Quick Reference](../references/REFERENCE.md)
 - [Test Fixtures](../tests/README.md)

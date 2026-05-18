@@ -17,7 +17,7 @@ Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and im
 ## Use the skill file
 
 ```text
-Use this skill: https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md
+Use this skill: https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md
 ```
 
 ## Inspect the AHF docs

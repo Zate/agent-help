@@ -21,7 +21,7 @@ The workflow in `.github/workflows/pages.yml` builds `_site/` with:
 ./scripts/build-site.sh _site
 ```
 
-The artifact includes the static landing page plus the root docs that the site links to, including `AHF-RFC.md`, `llms.txt`, `llms-full.txt`, `SKILL.md`, examples, references, and AHF docs.
+The artifact includes the static landing page plus the root docs that the site links to, including `AHF-RFC.md`, `llms.txt`, `llms-full.txt`, `.agents/skills/ahf/SKILL.md`, examples, references, and AHF docs.
 
 ## Local Check
 
