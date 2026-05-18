@@ -816,6 +816,36 @@ code { font-family: var(--mono); font-size: .94em; color: inherit; }
 
 /* ============================  RESPONSIVE  ============================ */
 
+/* ============================  COPY BUTTON  ============================ */
+
+.pre-wrap {
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg-elev);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s, color .15s, border-color .15s, background .15s;
+  z-index: 2;
+}
+.pre-wrap:hover .copy-btn,
+.copy-btn:focus { opacity: 1; }
+.copy-btn:hover { color: var(--green); border-color: var(--green); background: var(--green-soft); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); background: var(--green-soft); opacity: 1; }
+.copy-btn svg { pointer-events: none; }
+
 /* ============================  DOC PAGES  ============================ */
 
 .doc-wrap {
