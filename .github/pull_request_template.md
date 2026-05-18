@@ -16,10 +16,10 @@
 - [ ] `llms-full.txt` updated if implementation guidance changed
 - [ ] `llms.txt` updated if the high-level shape changed
 - [ ] `.agents/skills/ahf/SKILL.md` updated if build-skill guidance changed
-- [ ] `references/REFERENCE.md` updated if registries changed
+- [ ] `.agents/skills/ahf/references/REFERENCE.md` updated if registries changed
 - [ ] `examples/` updated if output shape changed
 - [ ] `spec/ahf-v0.1.json` updated if registries or conformance levels changed
-- [ ] `CONFORMANCE.md` updated if conformance requirements changed
+- [ ] `docs/CONFORMANCE.md` updated if conformance requirements changed
 
 ## Verification
 

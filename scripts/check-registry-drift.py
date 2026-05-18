@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "spec" / "ahf-v0.1.json"
 RFC = ROOT / "AHF-RFC.md"
-REFERENCE = ROOT / "references" / "REFERENCE.md"
+REFERENCE = ROOT / ".agents" / "skills" / "ahf" / "references" / "REFERENCE.md"
 LLMS_FULL = ROOT / "llms-full.txt"
 
 
@@ -116,7 +116,7 @@ def main() -> int:
             "record prefix registry",
             expected_prefixes,
             extract_table_values(REFERENCE, "## AHF record prefixes", 0),
-            "references/REFERENCE.md",
+            ".agents/skills/ahf/references/REFERENCE.md",
         )
     )
     errors.extend(
@@ -124,7 +124,7 @@ def main() -> int:
             "scalar type registry",
             expected_types,
             extract_table_values(REFERENCE, "## Scalar types", 0),
-            "references/REFERENCE.md",
+            ".agents/skills/ahf/references/REFERENCE.md",
         )
     )
     errors.extend(

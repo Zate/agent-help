@@ -46,8 +46,8 @@ check-spec-toc:
 
 lint-docs:
 	@! grep -RInE 'AOF|AOF-RFC|Agent Output Format|\bctx\b|zberg|mmiller|aziz' \
-		README.md AHF-RFC.md FAQ.md CONTRIBUTING.md SKILL.md llms.txt llms-full.txt \
-		references examples impl site .github AGENTS.md CONFORMANCE.md VERSIONING.md spec scripts docs
+		README.md AHF-RFC.md FAQ.md CONTRIBUTING.md llms.txt llms-full.txt \
+		.agents examples impl site .github AGENTS.md docs spec scripts
 
 lint-links:
 	./scripts/lint-markdown-links.py

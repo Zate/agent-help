@@ -10,7 +10,6 @@ cp \
   AHF-RFC.md \
   CHANGELOG.md \
   CODE_OF_CONDUCT.md \
-  CONFORMANCE.md \
   CONTRIBUTING.md \
   FAQ.md \
   LICENSE \
@@ -18,8 +17,6 @@ cp \
   NOTICE \
   README.md \
   SECURITY.md \
-  SKILL.md \
-  VERSIONING.md \
   agent-help.ahf \
   agent-help-full.ahf \
   llms-full.txt \
@@ -27,11 +24,15 @@ cp \
   prompts.md \
   "$out/"
 
-mkdir -p "$out/docs" "$out/examples" "$out/references" "$out/spec" "$out/tests"
+mkdir -p "$out/docs" "$out/examples" "$out/spec" "$out/tests"
 cp -R docs/. "$out/docs/"
 cp -R examples/. "$out/examples/"
-cp -R references/. "$out/references/"
 cp -R spec/. "$out/spec/"
 cp -R tests/. "$out/tests/"
+
+# Copy skill files so agents can fetch them at their canonical path
+mkdir -p "$out/.agents/skills/ahf/references"
+cp .agents/skills/ahf/SKILL.md "$out/.agents/skills/ahf/SKILL.md"
+cp .agents/skills/ahf/references/REFERENCE.md "$out/.agents/skills/ahf/references/REFERENCE.md"
 
 touch "$out/.nojekyll"
