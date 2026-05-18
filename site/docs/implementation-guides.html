@@ -93,6 +93,8 @@
           </ol>
         </div>
 
+        <!-- Note: content below is kept in sync with docs/IMPLEMENTATION_GUIDES.md -->
+
         <!-- COBRA -->
         <div class="fw-section" id="cobra">
           <div class="fw-section-head">
@@ -129,6 +131,7 @@ _ = root.PersistentFlags().MarkHidden("agent-help")</code></pre>
     }
     return cobra.ExactArgs(1)(cmd, args)
 },</code></pre>
+          <p>See the <a href="https://zate.github.io/agent-help/impl/">reference implementation</a> for a complete working example.</p>
         </div>
 
         <!-- CLICK -->
@@ -164,7 +167,7 @@ _ = root.PersistentFlags().MarkHidden("agent-help")</code></pre>
             <span class="fw-section-lang">Python</span>
             <h2>argparse</h2>
           </div>
-          <p>Add a hidden flag to the root parser:</p>
+          <p>Add a hidden flag to the root parser and to each subparser:</p>
           <pre><code>parser.add_argument("--agent-help", action="store_true", help=argparse.SUPPRESS)</code></pre>
           <p>Check the flag after <code>parse_known_args()</code>, before dispatch:</p>
           <pre><code>args, remaining = parser.parse_known_args()
@@ -199,7 +202,7 @@ if args.agent_help:
           <h3>Clap-specific notes</h3>
           <ul>
             <li><code>Command::get_name()</code> gives command segments for building the command path.</li>
-            <li><code>Command::get_about()</code> gives the short purpose text for AH1/AH2 headers.</li>
+            <li><code>Command::get_about()</code> gives short purpose text for AH1/AH2 headers.</li>
             <li><code>Command::get_subcommands()</code> can walk the tree to build AH1.</li>
             <li>Possible values map naturally to <code>enum(a|b)</code> in AHF.</li>
             <li>Value parsers do not always map cleanly to AHF scalar types — explicit metadata is clearer.</li>

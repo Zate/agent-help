@@ -167,14 +167,14 @@ next inspect "mem search similar n_102 --agent-out"    ← AHF follow-up</pre>
               <li>Implements trailing <code>--agent-help</code> that returns AH1 (index) or AH2 (command detail) in AHF format.</li>
               <li>Optionally implements <code>--agent-out</code> on result-returning commands, emitting an AHF <code>ok</code>/<code>err</code> envelope followed by a TOON result body.</li>
             </ol>
-            <p>That's it. You can adopt discovery first and add <code>--agent-out</code> later. See <a href="spec.html#s15">§15 of the spec</a> for full conformance requirements.</p>
+            <p>That's it. You can adopt discovery first and add <code>--agent-out</code> later. See <a href="https://zate.github.io/agent-help/spec.html#s15">§15 of the spec</a> for full conformance requirements.</p>
           </div>
         </div>
 
         <div class="faq-item" id="language">
           <p class="faq-q">Does agent-help require a specific language or framework?</p>
           <div class="faq-a">
-            <p>No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The <a href="docs/implementation-guides.html">implementation guides</a> cover Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.</p>
+            <p>No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The <a href="https://zate.github.io/agent-help/docs/implementation-guides.html">implementation guides</a> cover Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.</p>
           </div>
         </div>
 
@@ -189,7 +189,7 @@ next inspect "mem search similar n_102 --agent-out"    ← AHF follow-up</pre>
         <div class="faq-item" id="stable">
           <p class="faq-q">Is v0.1 stable enough to implement against?</p>
           <div class="faq-a">
-            <p>Yes, for trial implementations. The core wire shape, discovery convention, and <code>--agent-out</code> envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The open questions are unlikely to affect a basic implementation.</p>
+            <p>Yes, for trial implementations. The core wire shape, discovery convention, and <code>--agent-out</code> envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The <a href="https://zate.github.io/agent-help/spec.html#s21">open questions</a> are unlikely to affect a basic implementation.</p>
             <p>If you implement agent-help, please open an implementation report issue — it helps track adoption and find spec gaps before 1.0.</p>
           </div>
         </div>
@@ -197,7 +197,7 @@ next inspect "mem search similar n_102 --agent-out"    ← AHF follow-up</pre>
         <div class="faq-item" id="contribute">
           <p class="faq-q">How do I contribute or raise a question?</p>
           <div class="faq-a">
-            <p>Open an issue on <a href="https://github.com/Zate/agent-help/issues/new/choose" rel="noopener">GitHub</a> using one of the templates: open question, errata, feature proposal, or implementation report. For small fixes, a PR is welcome directly. See <a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">CONTRIBUTING.md</a> for details.</p>
+            <p>Open an issue on <a href="https://github.com/Zate/agent-help/issues/new/choose" rel="noopener">GitHub</a> using one of the templates: open question, errata, feature proposal, or implementation report. For small fixes, a PR is welcome directly. See <a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">CONTRIBUTING.md ↗</a> for details.</p>
           </div>
         </div>
 
