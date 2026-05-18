@@ -1,155 +1,744 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>agent-help — Agent-native CLIs</title>
-  <meta name="description" content="agent-help is an open convention for building CLIs that AI agents can discover and use directly.">
+  <title>agent-help — an open convention for agent-native CLIs</title>
+  <meta name="description" content="agent-help is an open convention that lets AI agents discover and invoke command-line tools directly. No wrappers, no MCP server, no shims.">
   <link rel="canonical" href="https://zate.github.io/agent-help/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="agent-help — Agent-native CLIs">
-  <meta property="og:description" content="An open convention for CLIs that AI agents can discover and use directly.">
+  <meta property="og:title" content="agent-help — agent-native CLIs">
+  <meta property="og:description" content="The third output mode for CLIs. An open convention for AI agents to discover and invoke command-line tools directly.">
   <meta property="og:url" content="https://zate.github.io/agent-help/">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="agent-help — Agent-native CLIs">
-  <meta name="twitter:description" content="An open convention for CLIs that AI agents can discover and use directly.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="agent-help — agent-native CLIs">
+  <meta name="twitter:description" content="The third output mode for CLIs.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
-  <main>
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Draft v0.1 · Open Convention</p>
-        <h1>agent-help</h1>
-        <p class="subtitle">Build CLIs that agents can use natively.</p>
-        <p class="lede">A tiny command-line convention for discovery, invocation, and dense runtime output. No server, plugin, or middleware required for the basic path.</p>
-        <div class="actions">
-          <a class="button primary" href="AHF-RFC.md">Read the spec</a>
-          <a class="button" href="#for-agents">Use with an agent</a>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <a class="brand" href="#top" aria-label="agent-help home">
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5 L9 12 L3 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+        <line x1="11" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-name">agent-help</span>
+      <span class="brand-status" title="Draft v0.1">DRAFT&nbsp;·&nbsp;v0.1</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="#concept">Concept</a>
+      <a href="#spec">Spec</a>
+      <a href="#implement">Implement</a>
+      <a href="#for-agents">For&nbsp;agents</a>
+      <a href="FAQ.md">FAQ</a>
+      <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
+    </nav>
+  </header>
+
+  <div class="statusbar" aria-label="Status">
+    <span class="dot"></span>
+    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span class="sep">·</span>
+    <span>Code <a href="LICENSE">Apache-2.0</a></span>
+    <span class="sep">·</span>
+    <span>Spec <a href="LICENSE-DOCS">CC-BY-4.0</a></span>
+  </div>
+
+  <main id="main">
+
+    <!-- ─────────────────────────  HERO  ───────────────────────── -->
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">Open convention&nbsp;·&nbsp;line-oriented&nbsp;·&nbsp;framework-agnostic</p>
+        <h1 class="hero-title">
+          <span class="word">The&nbsp;third</span>
+          <span class="word">output&nbsp;mode</span>
+          <span class="word accent">for&nbsp;CLIs.</span>
+        </h1>
+        <p class="hero-sub">
+          <strong>agent-help</strong> lets AI agents discover and invoke command-line tools directly &mdash;
+          no wrapper service, no MCP server, no plugin shim required for the basic path.
+        </p>
+        <div class="hero-actions">
+          <a class="cta primary" href="AHF-RFC.md">Read the spec<span aria-hidden="true">&nbsp;→</span></a>
+          <a class="cta" href="#wire">See the wire</a>
+          <a class="cta ghost" href="llms-full.txt">Implementation brief</a>
+        </div>
+        <dl class="hero-meta">
+          <div><dt>Status</dt><dd>Draft&nbsp;v0.1</dd></div>
+          <div><dt>Scope</dt><dd>CLI&nbsp;discovery&nbsp;+&nbsp;runtime&nbsp;output</dd></div>
+          <div><dt>Reference&nbsp;impl</dt><dd>Go / Cobra</dd></div>
+          <div><dt>License</dt><dd>Apache-2.0 / CC-BY-4.0</dd></div>
+        </dl>
+      </div>
+
+      <aside class="hero-demo" aria-label="Wire format demo">
+        <div class="terminal">
+          <div class="term-chrome">
+            <span class="t-dot t-red"></span>
+            <span class="t-dot t-yellow"></span>
+            <span class="t-dot t-green"></span>
+            <p class="term-title">tool — agent-help wire</p>
+          </div>
+<pre class="term-body"><code><span class="muted"># the same CLI, three audiences</span>
+<span class="prompt">$</span> <span class="bin">tool</span> <span class="flag">--help</span>             <span class="muted"># humans</span>
+<span class="prompt">$</span> <span class="bin">tool</span> <span class="flag">--json</span>             <span class="muted"># software</span>
+<span class="prompt">$</span> <span class="bin">tool</span> <span class="flag">--agent-help</span>       <span class="muted"># agents (discovery)</span>
+<span class="prompt">$</span> <span class="bin">tool</span> search postgres <span class="flag">--agent-out</span>
+
+<span class="status-ok">ok</span> nodes <span class="kv">count=2</span> <span class="kv">more=0</span>
+<span class="rec">nodes</span><span class="dim">[#2]{</span>id,type,tags,text<span class="dim">}:</span>
+  n_102,fact,<span class="str">"project:billing"</span>,postgres 15 required
+  n_088,decision,<span class="str">"project:billing"</span>,migrate read model
+<span class="rec next">next</span> inspect <span class="str">"tool show n_102 --agent-out"</span></code></pre>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ─────────────────────────  CONCEPT  ───────────────────────── -->
+    <section class="section" id="concept" aria-labelledby="concept-h">
+      <header class="section-head">
+        <p class="section-num">§ 01</p>
+        <h2 id="concept-h">The missing third output mode.</h2>
+        <p class="section-lede">
+          CLIs already speak two languages. They speak prose to humans and JSON to scripts.
+          Agents need something between those: dense, line-oriented, action-ready text exposed by the CLI itself.
+        </p>
+      </header>
+
+      <div class="modes">
+        <article class="mode">
+          <header>
+            <span class="mode-pill">01</span>
+            <h3>Humans</h3>
+            <code class="mode-flag">--help</code>
+          </header>
+          <p>Prose, tables, color, examples. Optimized for reading.</p>
+<pre class="mini"><code><span class="muted">$ tool search --help</span>
+<span class="strong">Usage:</span> tool search [OPTIONS] QUERY
+
+  Search the knowledge graph for nodes
+  matching QUERY across tags and content.
+
+<span class="strong">Options:</span>
+  --type   TEXT  filter by record type
+  --limit  INT   max records returned
+  --help         show this message and exit</code></pre>
+          <footer><span class="metric">≈ 410 tokens</span></footer>
+        </article>
+
+        <article class="mode">
+          <header>
+            <span class="mode-pill">02</span>
+            <h3>Software</h3>
+            <code class="mode-flag">--json</code>
+          </header>
+          <p>Strict serialization for scripts and parsers.</p>
+<pre class="mini"><code>{
+  <span class="json-k">"command"</span>: <span class="json-s">"search"</span>,
+  <span class="json-k">"args"</span>: [{
+    <span class="json-k">"name"</span>: <span class="json-s">"query"</span>,
+    <span class="json-k">"type"</span>: <span class="json-s">"string"</span>,
+    <span class="json-k">"required"</span>: <span class="json-n">true</span>
+  }],
+  <span class="json-k">"flags"</span>: [
+    {<span class="json-k">"name"</span>: <span class="json-s">"--type"</span>,
+     <span class="json-k">"type"</span>: <span class="json-s">"string"</span>}
+  ]
+}</code></pre>
+          <footer><span class="metric">≈ 140 tokens</span></footer>
+        </article>
+
+        <article class="mode highlight">
+          <header>
+            <span class="mode-pill accent">03</span>
+            <h3>Agents</h3>
+            <code class="mode-flag accent">--agent-help&nbsp;/&nbsp;--agent-out</code>
+          </header>
+          <p>Compact, line-oriented, action-ready. Optimized for token cost and call-the-next-tool.</p>
+<pre class="mini"><code><span class="rec">ah2</span> tool search <span class="dim">::</span> search records
+<span class="rec">use</span> tool search <span class="ah-arg">&lt;query&gt;</span> <span class="ah-flag">[--type TYPE]</span>
+<span class="rec">arg</span> query <span class="dim">:</span> string <span class="dim">::</span> search text
+<span class="rec">flag</span> --type <span class="dim">:</span> string <span class="dim">::</span> filter
+<span class="rec">flag</span> --limit <span class="dim">:</span> int <span class="dim">::</span> cap rows
+<span class="rec">ex</span> tool search postgres --limit 5</code></pre>
+          <footer><span class="metric accent">≈ 38 tokens</span></footer>
+        </article>
+      </div>
+
+      <p class="hint">
+        Token counts are illustrative. The point is the order of magnitude:
+        agent mode trims human prose without paying JSON&rsquo;s punctuation tax.
+      </p>
+    </section>
+
+    <!-- ─────────────────────────  WIRE  ───────────────────────── -->
+    <section class="section" id="wire" aria-labelledby="wire-h">
+      <header class="section-head">
+        <p class="section-num">§ 02</p>
+        <h2 id="wire-h">Two layers. One convention.</h2>
+        <p class="section-lede">
+          The convention has a thin help layer (<code>AHF</code>) and an optional runtime layer that delegates result bodies
+          to <a href="https://github.com/toon-format/spec" rel="noopener">TOON</a>. Each format does its job; neither tries to do both.
+        </p>
+      </header>
+
+      <div class="layers">
+        <article class="layer">
+          <div class="layer-head">
+            <span class="badge">Layer&nbsp;1</span>
+            <h3>AHF &mdash; Agent Help Format</h3>
+          </div>
+          <p>The line-record spec for <code>--agent-help</code> output and the <code>ok</code>/<code>err</code> protocol envelope for <code>--agent-out</code>.</p>
+<pre class="block"><code><span class="rec">ah1</span> tool <span class="dim">::</span> example data CLI
+<span class="rec">cmd</span> search <span class="ah-arg">&lt;query&gt;</span> <span class="ah-flag">[--type TYPE] [--limit int]</span> <span class="dim">::</span> search records
+<span class="rec">cmd</span> show <span class="ah-arg">&lt;id&gt;</span> <span class="dim">::</span> display one record
+<span class="rec">cmd</span> rm <span class="ah-arg">&lt;id&gt;</span> <span class="dim">::</span> delete a record
+<span class="rec more">more?</span> tool <span class="ah-arg">&lt;cmd&gt;</span> --agent-help</code></pre>
+          <ul class="layer-foot">
+            <li><code class="rec">ah1</code> / <code class="rec">cmd</code> / <code class="rec more">more?</code> — index</li>
+            <li><code class="rec">ah2</code> / <code class="rec">use</code> / <code class="rec">arg</code> / <code class="rec">flag</code> / <code class="rec">ex</code> — detail</li>
+            <li><code class="rec err">err</code> / <code class="rec next">next</code> / <code class="rec">hint</code> — recovery</li>
+          </ul>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="badge">Layer&nbsp;2</span>
+            <h3>TOON &mdash; result bodies</h3>
+          </div>
+          <p><code>--agent-out</code> emits an AHF status line, then a TOON result body. AHF wraps; TOON carries.</p>
+<pre class="block"><code><span class="status-ok">ok</span> nodes <span class="kv">count=2</span> <span class="kv">more=0</span>
+<span class="rec">nodes</span><span class="dim">[#2]{</span>id,type,tags,text<span class="dim">}:</span>
+  n_102,fact,<span class="str">project:billing</span>,postgres 15 required
+  n_088,decision,<span class="str">project:billing</span>,migrate read model
+<span class="rec next">next</span> inspect <span class="str">"tool show n_102 --agent-out"</span></code></pre>
+          <ul class="layer-foot">
+            <li><code class="status-ok">ok</code> / <code class="status-err">err</code> &mdash; protocol envelope (AHF)</li>
+            <li><code>[#N]{...}</code> &mdash; TOON length marker and header</li>
+            <li><code class="rec next">next</code> &mdash; the exact follow-up command</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────  DISCOVERY FLOW  ───────────────────────── -->
+    <section class="section" id="discovery" aria-labelledby="disc-h">
+      <header class="section-head">
+        <p class="section-num">§ 03</p>
+        <h2 id="disc-h">How an agent finds your tool.</h2>
+        <p class="section-lede">
+          Four hops from <em>nothing</em> to <em>calling the next command</em>. The breadcrumb in normal help is the only entry point an agent needs.
+        </p>
+      </header>
+
+      <ol class="flow">
+        <li>
+          <div class="flow-num">1</div>
+          <div class="flow-body">
+            <h3>Breadcrumb in <code>--help</code></h3>
+            <p>Agent runs <code>tool --help</code> and sees a one-line pointer.</p>
+<pre class="mini"><code><span class="muted">$ tool --help</span>
+<span class="strong">Usage:</span> tool [OPTIONS] COMMAND
+<span class="muted">…</span>
+LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="flow-num">2</div>
+          <div class="flow-body">
+            <h3>Index with <code>--agent-help</code></h3>
+            <p>Agent runs <code>tool --agent-help</code> and gets an AH1 command index.</p>
+<pre class="mini"><code><span class="rec">ah1</span> tool <span class="dim">::</span> example data CLI
+<span class="rec">cmd</span> search <span class="ah-arg">&lt;query&gt;</span>
+<span class="rec">cmd</span> show <span class="ah-arg">&lt;id&gt;</span>
+<span class="rec more">more?</span> tool <span class="ah-arg">&lt;cmd&gt;</span> --agent-help</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="flow-num">3</div>
+          <div class="flow-body">
+            <h3>Detail per command</h3>
+            <p>Agent runs <code>tool search --agent-help</code> for AH2 invocation detail.</p>
+<pre class="mini"><code><span class="rec">ah2</span> tool search
+<span class="rec">use</span> tool search <span class="ah-arg">&lt;query&gt;</span> <span class="ah-flag">[--limit int]</span>
+<span class="rec">arg</span> query <span class="dim">:</span> string
+<span class="rec">flag</span> --limit <span class="dim">:</span> int</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="flow-num">4</div>
+          <div class="flow-body">
+            <h3>Invoke with <code>--agent-out</code></h3>
+            <p>Agent calls the command. It gets a dense, structured result.</p>
+<pre class="mini"><code><span class="status-ok">ok</span> nodes <span class="kv">count=2 more=0</span>
+<span class="rec">nodes</span><span class="dim">[#2]{</span>id,type,text<span class="dim">}:</span>
+  n_102,fact,postgres 15 required
+<span class="rec next">next</span> inspect <span class="str">"tool show n_102"</span></code></pre>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ─────────────────────────  SPEC  ───────────────────────── -->
+    <section class="section spec-section" id="spec" aria-labelledby="spec-h">
+      <header class="section-head">
+        <p class="section-num">§ 04</p>
+        <h2 id="spec-h">The specification.</h2>
+        <p class="section-lede">
+          Written in Internet-Draft style with RFC&nbsp;2119 keywords used sparingly. The wire shape is stable enough for trial implementations; registry additions and conformance levels may change before v1.0.
+        </p>
+      </header>
+
+      <div class="spec-grid">
+        <nav class="spec-toc" aria-label="Spec table of contents">
+          <p class="toc-heading">Table of contents</p>
+          <ol>
+            <li><a href="AHF-RFC.md#1-introduction"><span>§1</span> Introduction</a></li>
+            <li><a href="AHF-RFC.md#2-conventions-and-definitions"><span>§2</span> Conventions &amp; definitions</a></li>
+            <li><a href="AHF-RFC.md#3-design-goals"><span>§3</span> Design goals</a></li>
+            <li><a href="AHF-RFC.md#4-document-model"><span>§4</span> Document model</a></li>
+            <li><a href="AHF-RFC.md#5-record-types"><span>§5</span> Record types</a></li>
+            <li><a href="AHF-RFC.md#6-scalar-types"><span>§6</span> Scalar types</a></li>
+            <li><a href="AHF-RFC.md#7-help-output-ah1ah2"><span>§7</span> Help output (AH1/AH2)</a></li>
+            <li><a href="AHF-RFC.md#8-runtime-output-agent-out"><span>§8</span> Runtime output (<code>--agent-out</code>)</a></li>
+            <li><a href="AHF-RFC.md#9-errors-and-warnings"><span>§9</span> Errors &amp; warnings</a></li>
+            <li><a href="AHF-RFC.md#10-pagination-and-continuation"><span>§10</span> Pagination</a></li>
+            <li><a href="AHF-RFC.md#20-implementation-guidance"><span>§20</span> Implementation guidance</a></li>
+            <li><a href="AHF-RFC.md#21-open-questions"><span>§21</span> Open questions</a></li>
+          </ol>
+          <a class="cta small" href="AHF-RFC.md">Read full spec&nbsp;→</a>
+        </nav>
+
+        <div class="spec-callouts">
+          <article class="callout">
+            <p class="callout-tag">REGISTRY</p>
+            <h4>Record prefixes</h4>
+            <p>The first token of every AHF line is a registered record type. New types are added by spec amendment.</p>
+            <div class="prefix-grid">
+              <code class="rec">ah1</code><code class="rec">ah2</code><code class="rec">cmd</code>
+              <code class="rec">use</code><code class="rec">arg</code><code class="rec">flag</code>
+              <code class="rec">ex</code><code class="rec more">more?</code><code class="rec next">next</code>
+              <code class="rec err">err</code><code class="rec">hint</code><code class="status-ok">ok</code>
+              <code class="status-err">err</code><code class="rec">warn</code>
+            </div>
+            <p class="callout-foot"><a href="spec/ahf-v0.1.json">Machine-readable registry&nbsp;→</a></p>
+          </article>
+
+          <article class="callout">
+            <p class="callout-tag">CONFORMANCE</p>
+            <h4>Two levels, adopt incrementally</h4>
+            <dl class="level-list">
+              <div>
+                <dt><span class="lvl">L1</span> agent-help-core</dt>
+                <dd>Discovery only. <code>--agent-help</code> on every primary subcommand. Breadcrumb in <code>--help</code>.</dd>
+              </div>
+              <div>
+                <dt><span class="lvl">L2</span> agent-help-runtime</dt>
+                <dd>Add <code>--agent-out</code> on result-returning commands. AHF envelope + TOON body. Recoverable errors.</dd>
+              </div>
+            </dl>
+            <p class="callout-foot"><a href="CONFORMANCE.md">Full conformance criteria&nbsp;→</a></p>
+          </article>
         </div>
       </div>
-      <pre class="terminal hero-terminal"><code>human:    tool --help
-software: tool --json
-agent:    tool --agent-help
-agent:    tool search query --agent-out</code></pre>
     </section>
 
-    <section class="strip">
-      <h2>The missing third output mode</h2>
-      <div class="grid three">
-        <article><span class="kicker">01</span><h3>Humans</h3><p>Use prose, tables, color, and examples.</p><code>--help</code></article>
-        <article><span class="kicker">02</span><h3>Software</h3><p>Use strict serialization and parsers.</p><code>--json</code></article>
-        <article><span class="kicker">03</span><h3>Agents</h3><p>Use compact, line-oriented, action-ready text.</p><code>--agent-help / --agent-out</code></article>
+    <!-- ─────────────────────────  IMPLEMENT  ───────────────────────── -->
+    <section class="section" id="implement" aria-labelledby="impl-h">
+      <header class="section-head">
+        <p class="section-num">§ 05</p>
+        <h2 id="impl-h">Add it to your CLI.</h2>
+        <p class="section-lede">
+          Three small changes. Most frameworks support agent-help as a hidden global flag with a generator that walks the command tree.
+        </p>
+      </header>
+
+      <ol class="steps">
+        <li>
+          <div class="step-meta"><span class="step-num">01</span><span class="step-time">~1&nbsp;min</span></div>
+          <div class="step-body">
+            <h3>Add the breadcrumb</h3>
+            <p>One line in normal <code>--help</code> output.</p>
+<pre class="mini"><code>LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="step-meta"><span class="step-num">02</span><span class="step-time">~1&nbsp;hr</span></div>
+          <div class="step-body">
+            <h3>Wire up <code>--agent-help</code></h3>
+            <p>A trailing global flag that emits AH1 at root and AH2 per subcommand.</p>
+<pre class="mini"><code><span class="prompt">$</span> <span class="bin">tool</span> <span class="flag">--agent-help</span>          <span class="muted"># AH1 index</span>
+<span class="prompt">$</span> <span class="bin">tool</span> subcmd <span class="flag">--agent-help</span>   <span class="muted"># AH2 detail</span></code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="step-meta"><span class="step-num">03</span><span class="step-time">~2&nbsp;hrs</span></div>
+          <div class="step-body">
+            <h3>Add <code>--agent-out</code> where it matters</h3>
+            <p>Wrap result-returning commands. AHF envelope first, then TOON body.</p>
+<pre class="mini"><code><span class="prompt">$</span> <span class="bin">tool</span> search query <span class="flag">--agent-out</span></code></pre>
+          </div>
+        </li>
+      </ol>
+
+      <div class="frameworks">
+        <p class="frameworks-heading">Framework guides</p>
+        <div class="fw-grid">
+          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+            <span class="fw-lang">Go</span>
+            <strong>Cobra</strong>
+            <span class="fw-hint">hidden persistent flag · annotation walk</span>
+          </a>
+          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+            <span class="fw-lang">Python</span>
+            <strong>Click</strong>
+            <span class="fw-hint">eager global option · params reflection</span>
+          </a>
+          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+            <span class="fw-lang">Python</span>
+            <strong>argparse</strong>
+            <span class="fw-hint">global flag · subparser metadata</span>
+          </a>
+          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+            <span class="fw-lang">Rust</span>
+            <strong>Clap</strong>
+            <span class="fw-hint">hidden global arg · post-parse intercept</span>
+          </a>
+          <a class="fw" href="docs/IMPLEMENTATION_GUIDES.md">
+            <span class="fw-lang">Node</span>
+            <strong>Commander</strong>
+            <span class="fw-hint">global option · preAction hook</span>
+          </a>
+          <a class="fw ref-impl" href="impl/">
+            <span class="fw-lang">Reference</span>
+            <strong>Go / Cobra impl</strong>
+            <span class="fw-hint">golden tests · ready to crib</span>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section class="flow">
-      <h2>How discovery works</h2>
-      <div class="steps">
-        <article><span>1</span><p>Agent sees the breadcrumb in normal <code>--help</code>.</p></article>
-        <article><span>2</span><p>Agent runs <code>tool --agent-help</code> for an AH1 command index.</p></article>
-        <article><span>3</span><p>Agent runs <code>tool subcmd --agent-help</code> for AH2 invocation detail.</p></article>
-        <article><span>4</span><p>Agent calls <code>--agent-out</code> for dense structured results.</p></article>
-      </div>
-    </section>
+    <!-- ─────────────────────────  FOR AGENTS  ───────────────────────── -->
+    <section class="section agents-section" id="for-agents" aria-labelledby="agents-h">
+      <header class="section-head">
+        <p class="section-num">§ 06</p>
+        <h2 id="agents-h">For agents.</h2>
+        <p class="section-lede">
+          Point an agent at these raw files. They&rsquo;re intentionally terse &mdash; this site is the
+          human landing page; agents should consume the source directly.
+        </p>
+      </header>
 
-    <section id="for-agents" class="agent-panel">
-      <div>
-        <p class="eyebrow">Agent entry points</p>
-        <h2>Point your agent at the raw docs.</h2>
-        <p>These files are intentionally terse. They are for agents first; the human site is only the landing page.</p>
-      </div>
-      <div class="agent-grid">
-        <article>
-          <h3>Orientation</h3>
-          <p>Small index for agents discovering the project.</p>
-          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt</code></pre>
-          <a href="llms.txt">View llms.txt</a>
+      <div class="agent-files">
+        <article class="afile">
+          <div class="afile-head">
+            <span class="afile-kind">orientation</span>
+            <h3><code>llms.txt</code></h3>
+          </div>
+          <p>Short index for agents discovering the project. Start here.</p>
+          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt</code></pre>
+          <div class="afile-actions">
+            <a href="llms.txt">View raw&nbsp;→</a>
+            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt" aria-label="Copy URL">Copy URL</button>
+          </div>
         </article>
-        <article>
-          <h3>Full Brief</h3>
-          <p>Give this to an agent before asking it to implement agent-help.</p>
-          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt</code></pre>
-          <a href="llms-full.txt">View llms-full.txt</a>
+
+        <article class="afile featured">
+          <div class="afile-head">
+            <span class="afile-kind accent">implementation brief</span>
+            <h3><code>llms-full.txt</code></h3>
+          </div>
+          <p>The full brief. Hand this to an agent and ask it to implement agent-help in your CLI.</p>
+          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt</code></pre>
+          <div class="afile-actions">
+            <a href="llms-full.txt">View raw&nbsp;→</a>
+            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt" aria-label="Copy URL">Copy URL</button>
+          </div>
         </article>
-        <article>
-          <h3>Skill</h3>
-          <p>Use this on platforms that support skill-style instructions.</p>
-          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md</code></pre>
-          <a href="SKILL.md">View SKILL.md</a>
+
+        <article class="afile">
+          <div class="afile-head">
+            <span class="afile-kind">skill</span>
+            <h3><code>SKILL.md</code></h3>
+          </div>
+          <p>agentskills.io-format skill for any platform that supports skill-style instructions.</p>
+          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md</code></pre>
+          <div class="afile-actions">
+            <a href="SKILL.md">View raw&nbsp;→</a>
+            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/SKILL.md" aria-label="Copy URL">Copy URL</button>
+          </div>
         </article>
-        <article>
-          <h3>AHF Docs</h3>
-          <p>AHF-style docs for the docs themselves.</p>
-          <pre><code>https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf</code></pre>
-          <a href="agent-help.ahf">View agent-help.ahf</a>
+
+        <article class="afile">
+          <div class="afile-head">
+            <span class="afile-kind">dogfood</span>
+            <h3><code>agent-help.ahf</code></h3>
+          </div>
+          <p>The docs themselves, expressed in the convention. AH1 entry + AH2 details.</p>
+          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf</code></pre>
+          <div class="afile-actions">
+            <a href="agent-help.ahf">View raw&nbsp;→</a>
+            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf" aria-label="Copy URL">Copy URL</button>
+          </div>
         </article>
       </div>
-      <div class="prompt-card">
-        <h3>Prompt to try</h3>
-        <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt and explain what agent-help is for.</code></pre>
-        <a href="prompts.md">More prompts</a>
-      </div>
-    </section>
 
-    <section>
-      <h2>Two layers, one convention</h2>
-      <div class="grid two">
-        <article>
-          <h3>AHF — Agent Help Format</h3>
-          <p>The line-record spec for <code>--agent-help</code> output: command index (AH1), command detail (AH2), errors, follow-up commands.</p>
-          <pre><code>ah1 tool :: example CLI
-cmd search &lt;query&gt; [--limit int] :: search
-cmd show &lt;id&gt; :: show one record
-more? tool &lt;cmd&gt; --agent-help</code></pre>
-        </article>
-        <article>
-          <h3>TOON — result bodies</h3>
-          <p><code>--agent-out</code> emits an AHF status line, then a <a href="https://github.com/toon-format/spec">TOON</a> result body. Each format does its job.</p>
-          <pre><code>ok nodes count=2 more=0
-nodes[#2]{id,type,tags,text}:
-  n_102,fact,project:billing,postgres 15 required
-  n_088,decision,project:billing,migrate read model
-next inspect "tool show n_102 --agent-out"</code></pre>
-        </article>
-      </div>
-    </section>
-
-    <section class="callout">
-      <h2>Discovery breadcrumb</h2>
-      <p>Add a short pointer to normal <code>--help</code> output so agents can find the rest:</p>
-      <pre><code>LLM agent? Use --agent-help for token-optimized usage.</code></pre>
-    </section>
-
-    <section>
-      <h2>Framework notes</h2>
-      <div class="pill-list">
-        <a href="docs/IMPLEMENTATION_GUIDES.md">Cobra</a>
-        <a href="docs/IMPLEMENTATION_GUIDES.md">Click</a>
-        <a href="docs/IMPLEMENTATION_GUIDES.md">argparse</a>
-        <a href="docs/IMPLEMENTATION_GUIDES.md">Clap</a>
-        <a href="docs/IMPLEMENTATION_GUIDES.md">Commander</a>
+      <div class="prompts">
+        <p class="prompts-heading">Prompts to try</p>
+        <div class="prompt-cards">
+          <div class="prompt-card">
+            <p class="prompt-tag">explain</p>
+            <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt
+and explain what agent-help is for.</code></pre>
+          </div>
+          <div class="prompt-card">
+            <p class="prompt-tag">implement</p>
+            <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt
+and implement agent-help in this CLI.</code></pre>
+          </div>
+        </div>
+        <p class="prompts-foot"><a href="prompts.md">More prompts&nbsp;→</a></p>
       </div>
     </section>
 
-    <section>
-      <h2>Start here</h2>
-      <div class="links">
-        <a href="AHF-RFC.md"><strong>Specification</strong><span>Read the AHF draft.</span></a>
-        <a href="llms.txt"><strong>llms.txt</strong><span>Point an agent here first.</span></a>
-        <a href="llms-full.txt"><strong>Implementation brief</strong><span>Ask an agent to implement from this.</span></a>
-        <a href="agent-help.ahf"><strong>AHF docs</strong><span>Docs in the convention's own shape.</span></a>
-        <a href="prompts.md"><strong>Prompts</strong><span>Copy prompts for coding agents.</span></a>
-        <a href="docs/ADOPTER_CHECKLIST.md"><strong>Adopter checklist</strong><span>Track implementation readiness.</span></a>
-        <a href="examples/"><strong>Examples</strong><span>Inspect concrete outputs.</span></a>
+    <!-- ─────────────────────────  EXAMPLES  ───────────────────────── -->
+    <section class="section" id="examples" aria-labelledby="ex-h">
+      <header class="section-head">
+        <p class="section-num">§ 07</p>
+        <h2 id="ex-h">Examples.</h2>
+        <p class="section-lede">
+          Concrete outputs with notes. Useful for sanity-checking your implementation, your validator, and any model that&rsquo;s reading agent-help for the first time.
+        </p>
+      </header>
+
+      <div class="examples-grid">
+        <a class="example" href="examples/01-agent-help-index-simple.md">
+          <span class="ex-num">01</span>
+          <strong>AH1 index, simple</strong>
+          <span>Plain command index for a small CLI.</span>
+        </a>
+        <a class="example" href="examples/02-agent-help-command-detail.md">
+          <span class="ex-num">02</span>
+          <strong>AH2 detail</strong>
+          <span>Args, flags, and an example for one command.</span>
+        </a>
+        <a class="example" href="examples/03-agent-help-error-hint.md">
+          <span class="ex-num">03</span>
+          <strong>Errors with hints</strong>
+          <span>How agents recover without parsing prose.</span>
+        </a>
+        <a class="example" href="examples/04-agent-out-list-results.md">
+          <span class="ex-num">04</span>
+          <strong>List results</strong>
+          <span>AHF envelope + TOON body. Common case.</span>
+        </a>
+        <a class="example" href="examples/05-agent-out-single-object.md">
+          <span class="ex-num">05</span>
+          <strong>Single object</strong>
+          <span>One record returned as a TOON row.</span>
+        </a>
+        <a class="example" href="examples/06-agent-out-paginated-warning.md">
+          <span class="ex-num">06</span>
+          <strong>Pagination + warning</strong>
+          <span>more=, warn records, follow-up next.</span>
+        </a>
       </div>
     </section>
 
-    <footer>
-      <p>agent-help is an open convention. Code licensed <a href="LICENSE">Apache 2.0</a>. Specification licensed <a href="LICENSE-DOCS">CC-BY-4.0</a>. <a href="https://github.com/Zate/agent-help">GitHub</a></p>
-    </footer>
+    <!-- ─────────────────────────  COMPARE  ───────────────────────── -->
+    <section class="section" id="compare" aria-labelledby="cmp-h">
+      <header class="section-head">
+        <p class="section-num">§ 08</p>
+        <h2 id="cmp-h">How does this compare?</h2>
+        <p class="section-lede">
+          agent-help is intentionally small. It overlaps with bigger systems but does not replace them &mdash; it gives every CLI an honest agent surface so wrappers and registries become optional.
+        </p>
+      </header>
+
+      <div class="compare-table" role="table" aria-label="agent-help compared to alternatives">
+        <div class="ct-head" role="row">
+          <div role="columnheader">&nbsp;</div>
+          <div role="columnheader" class="hl">agent-help</div>
+          <div role="columnheader">MCP</div>
+          <div role="columnheader">OpenAPI</div>
+          <div role="columnheader"><code>--help</code> / <code>--json</code></div>
+        </div>
+        <div class="ct-row" role="row">
+          <div role="rowheader">Lives where</div>
+          <div class="hl">In the CLI binary</div>
+          <div>External server</div>
+          <div>External schema</div>
+          <div>In the CLI binary</div>
+        </div>
+        <div class="ct-row" role="row">
+          <div role="rowheader">Transport</div>
+          <div class="hl">stdout / argv</div>
+          <div>JSON-RPC</div>
+          <div>HTTP</div>
+          <div>stdout</div>
+        </div>
+        <div class="ct-row" role="row">
+          <div role="rowheader">Designed for</div>
+          <div class="hl">Agents reading help text</div>
+          <div>Agents calling services</div>
+          <div>Programs calling APIs</div>
+          <div>Humans / scripts</div>
+        </div>
+        <div class="ct-row" role="row">
+          <div role="rowheader">Token cost</div>
+          <div class="hl">Low (line records)</div>
+          <div>Medium (JSON)</div>
+          <div>High (verbose schema)</div>
+          <div>High (prose) / Medium (JSON)</div>
+        </div>
+        <div class="ct-row" role="row">
+          <div role="rowheader">Server needed?</div>
+          <div class="hl">No</div>
+          <div>Yes</div>
+          <div>Yes</div>
+          <div>No</div>
+        </div>
+      </div>
+      <p class="hint"><a href="FAQ.md">FAQ: How does this relate to MCP, OpenAPI, JSON Schema?&nbsp;→</a></p>
+    </section>
+
+    <!-- ─────────────────────────  READ NEXT  ───────────────────────── -->
+    <section class="section read-next" id="read-next" aria-labelledby="rn-h">
+      <header class="section-head">
+        <p class="section-num">§ 09</p>
+        <h2 id="rn-h">Read next.</h2>
+      </header>
+
+      <div class="rn-grid">
+        <a class="rn-card primary" href="AHF-RFC.md">
+          <span class="rn-tag">specification</span>
+          <strong>AHF&nbsp;Draft v0.1</strong>
+          <span>The Internet-Draft style specification. Records, scalars, conformance, security.</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="rn-card" href="FAQ.md">
+          <span class="rn-tag">explainer</span>
+          <strong>FAQ</strong>
+          <span>Why agent-help? Why not just MCP, JSON, or a man page?</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="rn-card" href="docs/ADOPTER_CHECKLIST.md">
+          <span class="rn-tag">checklist</span>
+          <strong>Adopter checklist</strong>
+          <span>Track readiness from breadcrumb to runtime output.</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="rn-card" href="docs/PRIOR_ART.md">
+          <span class="rn-tag">research</span>
+          <strong>Prior art</strong>
+          <span>How agent-help relates to docopt, man, structured logging, and more.</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="rn-card" href="impl/">
+          <span class="rn-tag">code</span>
+          <strong>Reference impl</strong>
+          <span>Go / Cobra reference with golden tests. Crib freely.</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="rn-card" href="CONTRIBUTING.md">
+          <span class="rn-tag">community</span>
+          <strong>Contributing</strong>
+          <span>Open questions, registry proposals, and how to file feedback.</span>
+          <span class="rn-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
   </main>
+
+  <!-- ─────────────────────────  FOOTER  ───────────────────────── -->
+  <footer class="site-foot" role="contentinfo">
+    <div class="foot-grid">
+      <div class="foot-col foot-brand">
+        <div class="brand">
+          <span class="brand-name">agent-help</span>
+          <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
+        </div>
+        <p>An open convention for CLIs that AI agents can discover and use directly.</p>
+        <p class="foot-mini">
+          Code <a href="LICENSE">Apache-2.0</a> · Spec <a href="LICENSE-DOCS">CC-BY-4.0</a>
+        </p>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">Specification</p>
+        <ul>
+          <li><a href="AHF-RFC.md">AHF Draft v0.1</a></li>
+          <li><a href="CONFORMANCE.md">Conformance levels</a></li>
+          <li><a href="VERSIONING.md">Versioning policy</a></li>
+          <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
+          <li><a href="CHANGELOG.md">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">For agents</p>
+        <ul>
+          <li><a href="llms.txt">llms.txt</a></li>
+          <li><a href="llms-full.txt">llms-full.txt</a></li>
+          <li><a href="SKILL.md">SKILL.md</a></li>
+          <li><a href="agent-help.ahf">agent-help.ahf</a></li>
+          <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="prompts.md">Prompts</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">For implementers</p>
+        <ul>
+          <li><a href="docs/IMPLEMENTATION_GUIDES.md">Framework guides</a></li>
+          <li><a href="docs/ADOPTER_CHECKLIST.md">Adopter checklist</a></li>
+          <li><a href="docs/PARSING.md">Parsing notes</a></li>
+          <li><a href="docs/PRIOR_ART.md">Prior art</a></li>
+          <li><a href="docs/RELEASE_CHECKLIST.md">Release checklist</a></li>
+          <li><a href="impl/">Reference implementation</a></li>
+          <li><a href="examples/">Examples</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="README.md">README</a></li>
+          <li><a href="FAQ.md">FAQ</a></li>
+          <li><a href="CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="CODE_OF_CONDUCT.md">Code of conduct</a></li>
+          <li><a href="SECURITY.md">Security policy</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/issues" rel="noopener">Issues&nbsp;↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-sig">
+      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p class="foot-mini">© 2026 agent-help contributors.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Copy-to-clipboard for agent file URLs (progressive enhancement)
+    document.querySelectorAll('button.copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var url = btn.getAttribute('data-copy');
+        if (!url || !navigator.clipboard) return;
+        navigator.clipboard.writeText(url).then(function () {
+          var original = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () {
+            btn.textContent = original;
+            btn.classList.remove('copied');
+          }, 1400);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
