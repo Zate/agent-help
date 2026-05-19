@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that AHF-RFC.md numbered TOC entries match numbered headings."""
+"""Check that SPEC.md numbered TOC entries match numbered headings."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SPEC = ROOT / "AHF-RFC.md"
+SPEC = ROOT / "SPEC.md"
 TOC_ENTRY = re.compile(r"^(\d+)\.\s+(.+)$")
 HEADING = re.compile(r"^##\s+(\d+)\.\s+(.+)$")
 
@@ -25,7 +25,7 @@ def main() -> int:
     try:
         start = lines.index("## Table of Contents") + 1
     except ValueError:
-        print("AHF-RFC.md: missing Table of Contents heading", file=sys.stderr)
+        print("SPEC.md: missing Table of Contents heading", file=sys.stderr)
         return 1
 
     toc: list[tuple[str, str]] = []
@@ -44,7 +44,7 @@ def main() -> int:
 
     errors: list[str] = []
     if toc != headings:
-        errors.append("AHF-RFC.md table of contents drift")
+        errors.append("SPEC.md table of contents drift")
         errors.append(f"toc:      {toc}")
         errors.append(f"headings: {headings}")
 

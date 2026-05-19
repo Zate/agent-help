@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Read the specification
-    url: https://zate.github.io/agent-help/AHF-RFC.md
+    url: https://zate.github.io/agent-help/SPEC.md
     about: Check the current AHF draft before opening a design issue.
   - name: View examples
     url: https://zate.github.io/agent-help/examples/

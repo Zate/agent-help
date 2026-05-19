@@ -14,7 +14,7 @@ labels: proposal
 
 ## Proposed spec text
 
-<!-- Draft the normative text as it would appear in AHF-RFC.md. Use MUST/SHOULD/MAY per RFC 2119. -->
+<!-- Draft the technical text as it would appear in SPEC.md. Use MUST/SHOULD/MAY only where interoperability needs it. -->
 
 ## Examples
 

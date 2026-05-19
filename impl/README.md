@@ -1,6 +1,6 @@
 # mem — agent-help reference implementation
 
-A minimal Go/Cobra CLI that demonstrates the [agent-help convention](../AHF-RFC.md) in practice.
+A minimal Go/Cobra CLI that demonstrates the [agent-help convention](../SPEC.md) in practice.
 
 `mem` is a fake "project memory" tool — it stores facts, decisions, patterns, and tasks. The domain is simple enough to understand immediately, rich enough to show every agent-help scenario.
 

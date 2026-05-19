@@ -7,7 +7,7 @@ mkdir -p "$out"
 cp -R site/. "$out/"
 
 cp \
-  AHF-RFC.md \
+  SPEC.md \
   CHANGELOG.md \
   CODE_OF_CONDUCT.md \
   CONTRIBUTING.md \

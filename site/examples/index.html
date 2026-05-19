@@ -22,9 +22,9 @@
     </a>
     <nav class="topnav" aria-label="Primary">
       <a href="https://zate.github.io/agent-help/#concept">Concept</a>
-      <a href="https://zate.github.io/agent-help/spec.html">Spec</a>
+      <a href="https://zate.github.io/agent-help/#wire">Wire</a>
       <a href="https://zate.github.io/agent-help/#implement">Implement</a>
-      <a href="../prompts.html">For&nbsp;agents</a>
+      <a href="../prompts.html">Prompts</a>
       <a href="https://zate.github.io/agent-help/faq.html">FAQ</a>
       <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
@@ -32,11 +32,11 @@
 
   <div class="statusbar" aria-label="Status">
     <span class="dot"></span>
-    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span>MCP-lite for CLIs · two flags · no daemon, plugin, or runtime skill required</span>
     <span class="sep">·</span>
-    <span>Code <a href="../LICENSE">Apache-2.0</a></span>
+    <span>Code <a href="../../LICENSE">Apache-2.0</a></span>
     <span class="sep">·</span>
-    <span>Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></span>
+    <span>Spec <a href="../../LICENSE-DOCS">CC-BY-4.0</a></span>
   </div>
 
   <main id="main">
@@ -57,7 +57,7 @@
           <ul>
             <li><a href="https://zate.github.io/agent-help/spec.html">Full spec</a></li>
             <li><a href="https://zate.github.io/agent-help/docs/implementation-guides.html">Framework guides</a></li>
-            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+            <li><a href="https://zate.github.io/agent-help/docs/implementation-guides.html#shared">Implementation checklist</a></li>
           </ul>
         </div>
       </nav>
@@ -201,7 +201,7 @@ project[#6]{key,value}:
   version,0.1.0
   status,draft
   owner,team-cli
-  spec,AHF-RFC.md
+  spec,SPEC.md
   repo,github.com/Zate/agent-help
 next nodes "mem node list --agent-out"</pre>
           <div class="ex-notes">
@@ -266,38 +266,32 @@ next inspect "mem search query &lt;text&gt; --agent-out"</pre>
           <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
         </div>
         <p>An open convention for CLIs that AI agents can discover and use directly.</p>
-        <p class="foot-mini">Code <a href="../LICENSE">Apache-2.0</a> · Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></p>
+        <p class="foot-mini">Code <a href="../../LICENSE">Apache-2.0</a> · Spec <a href="../../LICENSE-DOCS">CC-BY-4.0</a></p>
       </div>
       <div class="foot-col">
-        <p class="foot-heading">Specification</p>
+        <p class="foot-heading">Start</p>
         <ul>
-          <li><a href="../spec.html">AHF Draft v0.1</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
-          <li><a href="../spec/ahf-v0.1.json">Machine-readable registry</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="../docs/implementation-guides.html">Implementation guide</a></li>
+          <li><a href="../examples/" aria-current="page">Examples</a></li>
+          <li><a href="../../impl/">Reference implementation</a></li>
         </ul>
       </div>
       <div class="foot-col">
-        <p class="foot-heading">For agents</p>
+        <p class="foot-heading">Implementation references</p>
         <ul>
-          <li><a href="../llms.txt">llms.txt</a></li>
-          <li><a href="../llms-full.txt">llms-full.txt</a></li>
-          <li><a href="https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md">SKILL.md</a></li>
-          <li><a href="../agent-help.ahf">agent-help.ahf</a></li>
-          <li><a href="../agent-help-full.ahf">agent-help-full.ahf</a></li>
+          <li><a href="../../llms-full.txt">llms-full.txt</a></li>
           <li><a href="../prompts.html">Prompts</a></li>
+          <li><a href="../spec.html">Detailed contract</a></li>
+          <li><a href="../../spec/ahf-v0.1.json">Registry JSON</a></li>
         </ul>
       </div>
       <div class="foot-col">
-        <p class="foot-heading">For implementers</p>
+        <p class="foot-heading">Project</p>
         <ul>
-          <li><a href="../docs/implementation-guides.html">Framework guides</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
-          <li><a href="../impl/">Reference implementation</a></li>
-          <li><a href="../examples/">Examples</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
         </ul>
       </div>
       <div class="foot-col">

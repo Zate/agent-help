@@ -1,126 +1,145 @@
-# agent-help — Frequently Asked Questions
+# agent-help — FAQ
 
-## Why does agent-help exist? Don't we have enough formats?
+## What is agent-help?
 
-The short answer: existing formats solve adjacent problems, not this one.
+agent-help is MCP-lite for command-line tools.
 
-CLIs already have two good output modes:
-- **`--help`** — prose for humans
-- **`--json`** — structured data for software
+Instead of building an MCP server, plugin, or skill just so an AI agent can use your CLI, you add two flags:
 
-Neither works well for AI agents. Human output wastes tokens on decoration. JSON wastes tokens on punctuation and says nothing about how to discover commands, what to call next, or how to recover from errors.
+- `--agent-help` — compact command discovery for agents
+- `--agent-out` — compact structured results for agents
 
-agent-help defines a *third mode*: `--agent-help` for token-efficient discovery (using AHF line records) and `--agent-out` for dense runtime results (using TOON for data, AHF for the protocol envelope). The CLI exposes this surface directly; wrappers and servers can still build on top.
+The CLI remains the source of truth. Humans still use `--help`. Scripts still use `--json`. Agents get a tiny native surface that is easy to discover and cheap to keep in context.
 
----
+## What problem does it solve?
 
-## How does agent-help relate to TOON?
+Agents are surprisingly bad at using ordinary CLIs from human help text. They parse prose, guess required flags, miss enum values, and waste context on tables and decoration.
 
-They're complementary layers — designed to work together.
-
-[TOON (Token-Oriented Object Notation)](https://github.com/toon-format/spec) is the recommended encoding for `--agent-out` result bodies. AHF and TOON each do their job:
-
-| Layer | Format | Covers |
-|---|---|---|
-| Discovery | AHF | `--agent-help`, AH1/AH2, command signatures, args, flags, examples |
-| Protocol | AHF | `ok`/`err`/`warn` status, `next`/`hint` follow-up records |
-| Data | TOON | Result bodies, lists, objects, nested structures |
-
-The golden path for `--agent-out`:
+agent-help gives them the part they actually need:
 
 ```text
-ok nodes count=3 more=0                      ← AHF status line
-nodes[#3]{id,type,tags,text}:                ← TOON result body
-  n_102,fact,project:billing,postgres 15 required
-  n_088,decision,project:billing,migrate read model
-  n_061,pattern,db|ops,use connection pool max 20
-next inspect "mem search similar n_102 --agent-out"    ← AHF follow-up
+ah1 tool :: example data CLI
+cmd search <query> [--limit int] :: search records
+cmd show <id> :: display one record
+more? tool <cmd> --agent-help
 ```
 
-TOON format: `[#N]` length marker, two-space indented rows, values quoted only when containing commas or spaces.
+Then, for a specific command:
 
-TOON handles the data. AHF handles the protocol.
+```text
+ah2 tool search
+use tool search <query> [--limit int]
+arg query:str req :: search text
+flag --limit:int opt default=20 :: max rows
+ex tool search postgres --limit 5
+```
 
----
+No prose. No guessing. No separate docs at runtime.
 
-## Why not just output JSON with `--json`?
+## Is this a replacement for MCP?
 
-You should keep `--json` for software consumers — agent-help doesn't replace it. But JSON is suboptimal for agents:
+No. MCP is great when you need a real tool server, resources, long-lived sessions, auth mediation, or a protocol boundary.
 
-1. **Token overhead.** Braces, brackets, commas, and quotes repeat constantly. A 20-field list in JSON uses 3–5× more tokens than the equivalent TOON.
-2. **No discovery.** JSON encodes data. It says nothing about what commands exist, what args they take, or what to call next.
-3. **No follow-up.** A JSON result doesn't tell an agent what command to run for the next page, to inspect a failure, or to recover from an error. AHF `next` records embed this directly.
+agent-help is for the much smaller case: “I already have a CLI; I want agents to use it reliably.” It avoids the daemon, SDK, packaging, and deployment work of a full MCP integration.
 
----
+You can still build an MCP server on top of an agent-help-enabled CLI later.
 
-## Why not just tell agents to read `--help`?
+## Is this a replacement for skills?
 
-Human `--help` is designed for humans: prose, aligned columns, color escapes, examples chosen for clarity, aliases, version strings. Agents spend tokens on all of that decoration and still have to infer argument types, required flags, and valid enum values from prose.
+No. Skills are useful for teaching an agent a workflow or domain.
 
-`--agent-help` emits the same information as compact AHF records — derived from the same command metadata, without the presentation layer.
+But an agent should not need a skill just to learn how to invoke `tool search <query> --limit 5`. That knowledge belongs in the CLI itself.
 
----
+This repository includes a `SKILL.md`, but it is only a build-time helper for coding agents that are implementing agent-help in a CLI. It is not required for agents that use an already-enabled CLI.
 
-## Why not use man pages or shell completion scripts?
+## Why not just use `--help`?
 
-They encode some overlapping information, but:
+Human help is optimized for people: prose, sections, alignment, color, aliases, and examples. Agents can read it, but they waste tokens and still have to infer structure.
 
-- They're separate files, not embedded in the tool's stdout.
-- They require platform-specific parsing.
-- They don't encode follow-up commands, pagination cursors, or error hints.
-- Completion scripts describe valid tokens, not valid typed invocations.
+`--agent-help` is the same command truth in a smaller shape:
 
-agent-help is in the tool's output stream itself — no side-channel files, no platform-specific parsing.
+```text
+cmd deploy <env> [--dry-run bool] :: deploy service
+```
 
----
+That one line tells an agent the command, required positional argument, useful optional flag, and purpose.
 
-## How does agent-help relate to MCP or plugin protocols?
+## Why not just use JSON?
 
-[MCP](https://modelcontextprotocol.io) and similar protocols wrap CLI capabilities in an RPC server. Powerful, but heavyweight:
+Keep `--json` for software. agent-help does not replace it.
 
-- Separate server process to run and maintain.
-- Server SDK to implement.
-- Agent runtime must support MCP specifically.
-- Deployment and configuration surface.
+JSON is verbose for LLM context and does not solve command discovery. A JSON result can describe data, but it usually does not tell the agent:
 
-agent-help is complementary. It makes the CLI itself agent-readable, so an agent can use it directly. MCP wrappers, plugins, and skills can still be built on top of an agent-help CLI, but they are not required for basic discovery and invocation.
+- what command to run next
+- whether output was truncated
+- how to recover from an invalid invocation
+- which flags or enum values are valid
 
----
+`--agent-out` adds a small protocol envelope around dense data:
 
-## What does "conforming" mean?
+```text
+ok issues count=2 more=1
+issues[#2]{id,status,title}:
+  BUG-1,open,login fails
+  BUG-2,triage,slow search
+next page "tool issues --cursor abc --agent-out"
+```
 
-A typical conforming CLI:
+## What is AHF?
 
-1. Adds a breadcrumb or equivalent pointer to normal `--help`.
-2. Implements trailing `--agent-help` that returns AH1 (index) or AH2 (command detail) in AHF format.
-3. Optionally implements `--agent-out` on result-returning commands, emitting an AHF `ok`/`err` envelope followed by a TOON result body.
+AHF means Agent Help Format. It is the small line-record format used by `--agent-help` and by the `ok` / `err` / `warn` / `next` / `hint` envelope around `--agent-out`.
 
-That's it. You can adopt discovery first and add `--agent-out` later. See [§15 of the spec](https://zate.github.io/agent-help/spec.html#s15) for full conformance requirements.
+You mostly do not need to think about the name. The important part is: one useful record per line, minimal punctuation, exact commands when follow-up is needed.
 
----
+## What is TOON?
 
-## Does agent-help require a specific language or framework?
+TOON is the recommended dense data encoding for `--agent-out` result bodies.
 
-No. AHF is a text convention, not a library. TOON is simple enough to emit without a library for most result sets. Both work with any language and any CLI framework. The [implementation guides](https://zate.github.io/agent-help/docs/implementation-guides.html) cover Cobra (Go), Click (Python), Clap (Rust), Commander (Node), and argparse.
+AHF says whether the command succeeded and what to do next. TOON carries rows or objects.
 
----
+```text
+ok users count=2 more=0
+users[#2]{id,name,role}:
+  u1,Ada,admin
+  u2,Lin,viewer
+```
 
-## What's the relationship to agentskills.io?
+## What does an agent need before using an agent-help CLI?
 
-[agentskills.io](https://agentskills.io) defines a standard format for packaging reusable agent capabilities as skills (a `.agents/skills/ahf/SKILL.md` file with YAML frontmatter and instructions). This repo ships a `.agents/skills/ahf/SKILL.md` that follows that format — it's a **build-time development tool** that helps you implement agent-help in your own CLI using an agent assistant.
+Nothing special.
 
-agent-help itself has no dependency on agentskills.io. Once your CLI conforms, agents can use it directly with no skill file, MCP server, or any other runtime component.
+The expected path is:
 
----
+1. Agent runs `tool --help`.
+2. It sees `LLM agent? Use --agent-help for token-optimized usage.`
+3. It runs `tool --agent-help`.
+4. It follows the records from there.
 
-## Is v0.1 stable enough to implement against?
+If you have to give the agent this website, the spec, `llms-full.txt`, or a skill before it can use the CLI, the implementation has missed the point.
 
-Yes, for trial implementations. The core wire shape, discovery convention, and `--agent-out` envelope are intended to be stable. Registry entries, naming details, and conformance levels may still change before v1.0. The [open questions](https://zate.github.io/agent-help/spec.html#s21) are unlikely to affect a basic implementation.
+## Then why does this repo have a spec and `llms-full.txt`?
 
-If you implement agent-help, please open an implementation report issue — it helps track adoption and find spec gaps before 1.0.
+Because implementers need guidance.
 
----
+Those files teach a human or coding agent how to add the two flags to a CLI and keep the output consistent. They are not meant to be runtime documentation for agents using your CLI.
 
-## How do I contribute or raise a question?
+## How much do I need to implement?
 
-Open an issue on [GitHub](https://github.com/Zate/agent-help/issues/new/choose) using one of the templates: open question, errata, feature proposal, or implementation report. For small fixes, a PR is welcome directly. See [CONTRIBUTING.md](https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md) for details.
+Start small:
+
+1. Add the breadcrumb to `--help`.
+2. Add `tool --agent-help` for a command index.
+3. Add `tool subcmd --agent-help` for command detail.
+4. Add `--agent-out` only where structured results matter.
+
+You can stop after discovery and still get value.
+
+## Does it require a library?
+
+No. It is plain text. Generate it from your existing command metadata if you can.
+
+Framework notes are available for Cobra, Click, argparse, Clap, and Commander in [`docs/IMPLEMENTATION_GUIDES.md`](docs/IMPLEMENTATION_GUIDES.md).
+
+## Is v0.1 stable enough to try?
+
+Yes. Treat it as a small draft convention for experiments and early adopters. The core shape is intentionally tiny; names and registry details may still change before v1.0.

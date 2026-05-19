@@ -9,7 +9,7 @@ description: >-
 license: Apache-2.0
 metadata:
   version: "0.1"
-  spec: "https://zate.github.io/agent-help/AHF-RFC.md"
+  spec: "https://zate.github.io/agent-help/SPEC.md"
   homepage: "https://github.com/Zate/agent-help"
 compatibility: >-
   Language-agnostic. Works with any CLI framework (Cobra, Click, Clap,
@@ -17,6 +17,8 @@ compatibility: >-
 ---
 
 # agent-help CLI contract
+
+This is a build-time implementation skill. Use it when modifying a CLI to add agent-help support; do not require agents to load this skill before using an already agent-help-enabled CLI.
 
 When building or modifying a non-trivial CLI, implement agent-native surfaces.
 
@@ -27,10 +29,10 @@ Recommended when commands emit structured results:
 - `--agent-out`: runtime output using AHF protocol envelope + TOON result body.
 
 Reference spec:
-- [`AHF-RFC.md`](AHF-RFC.md) — full AHF draft specification
+- [`SPEC.md`](../../../SPEC.md) — technical AHF spec
 - [`references/REFERENCE.md`](references/REFERENCE.md) — quick-reference card
-- [`llms-full.txt`](llms-full.txt) — pasteable implementation brief
-- [`examples/`](examples/) — agent-help output examples
+- [`llms-full.txt`](../../../llms-full.txt) — pasteable implementation brief
+- [`examples/`](../../../examples/) — agent-help output examples
 - [TOON spec](https://github.com/toon-format/spec) — encoding for --agent-out result bodies
 
 ## Core rule

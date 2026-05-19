@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>agent-help — an open convention for agent-native CLIs</title>
-  <meta name="description" content="agent-help is an open convention that lets AI agents discover and invoke command-line tools directly. No wrappers, no MCP server, no shims.">
+  <title>agent-help — MCP-lite for CLIs</title>
+  <meta name="description" content="agent-help is MCP-lite for CLIs: add --agent-help and --agent-out so AI agents can discover, invoke, and parse your tool without a server, plugin, or skill.">
   <link rel="canonical" href="https://zate.github.io/agent-help/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="agent-help — agent-native CLIs">
-  <meta property="og:description" content="The third output mode for CLIs. An open convention for AI agents to discover and invoke command-line tools directly.">
+  <meta property="og:title" content="agent-help — MCP-lite for CLIs">
+  <meta property="og:description" content="Two small flags that let AI agents discover, invoke, and parse CLIs without MCP infrastructure or runtime skills.">
   <meta property="og:url" content="https://zate.github.io/agent-help/">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="agent-help — agent-native CLIs">
-  <meta name="twitter:description" content="The third output mode for CLIs.">
+  <meta name="twitter:title" content="agent-help — MCP-lite for CLIs">
+  <meta name="twitter:description" content="Two flags for agent-readable CLIs.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -29,17 +29,17 @@
     </a>
     <nav class="topnav" aria-label="Primary">
       <a href="#concept">Concept</a>
-      <a href="spec.html">Spec</a>
+      <a href="#wire">Wire</a>
       <a href="#implement">Implement</a>
-      <a href="prompts.html">For&nbsp;agents</a>
       <a href="faq.html">FAQ</a>
+      <a href="prompts.html">Prompts</a>
       <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
   </header>
 
   <div class="statusbar" aria-label="Status">
     <span class="dot"></span>
-    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span>MCP-lite for CLIs · two flags · no daemon, plugin, or runtime skill required</span>
     <span class="sep">·</span>
     <span>Code <a href="LICENSE">Apache-2.0</a></span>
     <span class="sep">·</span>
@@ -51,20 +51,21 @@
     <!-- ─────────────────────────  HERO  ───────────────────────── -->
     <section class="hero" id="top">
       <div class="hero-copy">
-        <p class="eyebrow">Open convention&nbsp;·&nbsp;line-oriented&nbsp;·&nbsp;framework-agnostic</p>
+        <p class="eyebrow">MCP-lite&nbsp;·&nbsp;two flags&nbsp;·&nbsp;no runtime docs</p>
         <h1 class="hero-title">
-          <span class="word">The&nbsp;third</span>
-          <span class="word">output&nbsp;mode</span>
-          <span class="word accent">for&nbsp;CLIs.</span>
+          <span class="word">Teach&nbsp;agents</span>
+          <span class="word">your&nbsp;CLI</span>
+          <span class="word accent">in&nbsp;stdout.</span>
         </h1>
         <p class="hero-sub">
-          <strong>agent-help</strong> lets AI agents discover and invoke command-line tools directly &mdash;
-          no wrapper service, no MCP server, no plugin shim required for the basic path.
+          Add <code>--agent-help</code> for compact command discovery and <code>--agent-out</code>
+          for dense structured results. Agents can discover, invoke, and parse your tool without
+          an MCP server, plugin, skill, or preloaded docs.
         </p>
         <div class="hero-actions">
-          <a class="cta primary" href="spec.html">Read the spec<span aria-hidden="true">&nbsp;→</span></a>
-          <a class="cta" href="#wire">See the wire</a>
-          <a class="cta ghost" href="llms-full.txt">Implementation brief</a>
+          <a class="cta primary" href="#wire">See the wire<span aria-hidden="true">&nbsp;→</span></a>
+          <a class="cta" href="#implement">Add it to a CLI</a>
+          <a class="cta ghost" href="faq.html">Why it exists</a>
         </div>
         <dl class="hero-meta">
           <div><dt>Status</dt><dd>Draft&nbsp;v0.1</dd></div>
@@ -282,65 +283,50 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
       </ol>
     </section>
 
-    <!-- ─────────────────────────  SPEC  ───────────────────────── -->
-    <section class="section spec-section" id="spec" aria-labelledby="spec-h">
+    <!-- ─────────────────────────  RUNTIME PRINCIPLE  ───────────────────────── -->
+    <section class="section spec-section" id="runtime" aria-labelledby="runtime-h">
       <header class="section-head">
         <p class="section-num">§ 04</p>
-        <h2 id="spec-h">The specification.</h2>
+        <h2 id="runtime-h">No runtime reading list.</h2>
         <p class="section-lede">
-          Written in Internet-Draft style with RFC&nbsp;2119 keywords used sparingly. The wire shape is stable enough for trial implementations; registry additions and conformance levels may change before v1.0.
+          The docs in this repo teach people and coding agents how to add the flags. They are not instructions an agent must preload before using your CLI.
         </p>
       </header>
 
       <div class="spec-grid">
-        <nav class="spec-toc" aria-label="Spec table of contents">
-          <p class="toc-heading">Table of contents</p>
+        <nav class="spec-toc" aria-label="Runtime path">
+          <p class="toc-heading">Runtime path</p>
           <ol>
-            <li><a href="spec.html#s1"><span>§1</span> Introduction</a></li>
-            <li><a href="spec.html#s2"><span>§2</span> Terminology</a></li>
-            <li><a href="spec.html#s4"><span>§4</span> Design goals</a></li>
-            <li><a href="spec.html#s7"><span>§7</span> AHF data model</a></li>
-            <li><a href="spec.html#s9"><span>§9</span> Record prefix registry</a></li>
-            <li><a href="spec.html#s10"><span>§10</span> Scalar type registry</a></li>
-            <li><a href="spec.html#s11"><span>§11</span> Help output (AH1/AH2)</a></li>
-            <li><a href="spec.html#s12"><span>§12</span> Runtime output (<code>--agent-out</code>)</a></li>
-            <li><a href="spec.html#s13"><span>§13</span> Errors &amp; warnings</a></li>
-            <li><a href="spec.html#s14"><span>§14</span> Pagination</a></li>
-            <li><a href="spec.html#s20"><span>§20</span> Implementation guidance</a></li>
-            <li><a href="spec.html#s21"><span>§21</span> Open questions</a></li>
+            <li><span>1</span> Agent sees the breadcrumb in <code>tool --help</code>.</li>
+            <li><span>2</span> Agent runs <code>tool --agent-help</code>.</li>
+            <li><span>3</span> Agent follows <code>cmd</code>, <code>use</code>, <code>arg</code>, and <code>flag</code> records.</li>
+            <li><span>4</span> Agent asks for <code>--agent-out</code> when it wants compact structured results.</li>
           </ol>
-          <a class="cta small" href="spec.html">Read full spec&nbsp;→</a>
+          <a class="cta small" href="#implement">Implement that path&nbsp;→</a>
         </nav>
 
         <div class="spec-callouts">
           <article class="callout">
-            <p class="callout-tag">REGISTRY</p>
-            <h4>Record prefixes</h4>
-            <p>The first token of every AHF line is a registered record type. New types are added by spec amendment.</p>
-            <div class="prefix-grid">
-              <code class="rec">ah1</code><code class="rec">ah2</code><code class="rec">cmd</code>
-              <code class="rec">use</code><code class="rec">arg</code><code class="rec">flag</code>
-              <code class="rec">ex</code><code class="rec more">more?</code><code class="rec next">next</code>
-              <code class="rec err">err</code><code class="rec">hint</code><code class="status-ok">ok</code>
-              <code class="status-err">err</code><code class="rec">warn</code>
-            </div>
-            <p class="callout-foot"><a href="spec/ahf-v0.1.json">Machine-readable registry&nbsp;→</a></p>
+            <p class="callout-tag">IMPLEMENTATION ONLY</p>
+            <h4>Why the repo still has references</h4>
+            <p><code>SPEC.md</code>, <code>llms-full.txt</code>, and <code>SKILL.md</code> help maintainers add agent-help correctly. Once the CLI emits the records, agents should not need those files.</p>
+            <p class="callout-foot"><a href="prompts.html">Implementation prompts&nbsp;→</a></p>
           </article>
 
           <article class="callout">
-            <p class="callout-tag">CONFORMANCE</p>
-            <h4>Two levels, adopt incrementally</h4>
+            <p class="callout-tag">ADOPT IN PIECES</p>
+            <h4>Start with discovery</h4>
             <dl class="level-list">
               <div>
-                <dt><span class="lvl">L1</span> agent-help-core</dt>
-                <dd>Discovery only. <code>--agent-help</code> on every primary subcommand. Breadcrumb in <code>--help</code>.</dd>
+                <dt><span class="lvl">1</span> <code>--agent-help</code></dt>
+                <dd>Expose the command index and per-command invocation details.</dd>
               </div>
               <div>
-                <dt><span class="lvl">L2</span> agent-help-runtime</dt>
-                <dd>Add <code>--agent-out</code> on result-returning commands. AHF envelope + TOON body. Recoverable errors.</dd>
+                <dt><span class="lvl">2</span> <code>--agent-out</code></dt>
+                <dd>Add dense result output only where structured data helps agents act.</dd>
               </div>
             </dl>
-            <p class="callout-foot"><a href="https://github.com/Zate/agent-help/blob/main/docs/CONFORMANCE.md" rel="noopener">Full conformance criteria&nbsp;↗</a></p>
+            <p class="callout-foot"><a href="spec.html">Detailed implementer contract&nbsp;→</a></p>
           </article>
         </div>
       </div>
@@ -421,37 +407,23 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
       </div>
     </section>
 
-    <!-- ─────────────────────────  FOR AGENTS  ───────────────────────── -->
-    <section class="section agents-section" id="for-agents" aria-labelledby="agents-h">
+    <!-- ─────────────────────────  IMPLEMENTATION FILES  ───────────────────────── -->
+    <section class="section agents-section" id="implementation-files" aria-labelledby="impl-files-h">
       <header class="section-head">
         <p class="section-num">§ 06</p>
-        <h2 id="agents-h">For agents.</h2>
+        <h2 id="impl-files-h">Implementation files, not runtime docs.</h2>
         <p class="section-lede">
-          Point an agent at these raw files. They&rsquo;re intentionally terse &mdash; this site is the
-          human landing page; agents should consume the source directly.
+          Use these when adding agent-help to a CLI. Do not make agents read them before using an already-enabled CLI.
         </p>
       </header>
 
       <div class="agent-files">
-        <article class="afile">
-          <div class="afile-head">
-            <span class="afile-kind">orientation</span>
-            <h3><code>llms.txt</code></h3>
-          </div>
-          <p>Short index for agents discovering the project. Start here.</p>
-          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt</code></pre>
-          <div class="afile-actions">
-            <a href="llms.txt">View raw&nbsp;→</a>
-            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/llms.txt" aria-label="Copy URL">Copy URL</button>
-          </div>
-        </article>
-
         <article class="afile featured">
           <div class="afile-head">
-            <span class="afile-kind accent">implementation brief</span>
+            <span class="afile-kind accent">coding agent brief</span>
             <h3><code>llms-full.txt</code></h3>
           </div>
-          <p>The full brief. Hand this to an agent and ask it to implement agent-help in your CLI.</p>
+          <p>Paste this into a coding agent when you want it to implement <code>--agent-help</code> and <code>--agent-out</code>.</p>
           <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt</code></pre>
           <div class="afile-actions">
             <a href="llms-full.txt">View raw&nbsp;→</a>
@@ -461,10 +433,10 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
 
         <article class="afile">
           <div class="afile-head">
-            <span class="afile-kind">skill</span>
+            <span class="afile-kind">optional skill</span>
             <h3><code>SKILL.md</code></h3>
           </div>
-          <p>agentskills.io-format skill for any platform that supports skill-style instructions.</p>
+          <p>A build-time skill for platforms that support skill-style coding instructions. Not a runtime dependency.</p>
           <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md</code></pre>
           <div class="afile-actions">
             <a href="https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md">View raw&nbsp;→</a>
@@ -474,33 +446,28 @@ LLM agent? Use <span class="rec">--agent-help</span> for token-optimized usage.<
 
         <article class="afile">
           <div class="afile-head">
-            <span class="afile-kind">dogfood</span>
-            <h3><code>agent-help.ahf</code></h3>
+            <span class="afile-kind">contract</span>
+            <h3><code>SPEC.md</code></h3>
           </div>
-          <p>The docs themselves, expressed in the convention. AH1 entry + AH2 details.</p>
-          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf</code></pre>
+          <p>The detailed implementer contract for validators, tests, and edge cases. Secondary to the simple idea.</p>
+          <pre class="url"><code>https://raw.githubusercontent.com/Zate/agent-help/main/SPEC.md</code></pre>
           <div class="afile-actions">
-            <a href="agent-help.ahf">View raw&nbsp;→</a>
-            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/agent-help.ahf" aria-label="Copy URL">Copy URL</button>
+            <a href="spec.html">View rendered&nbsp;→</a>
+            <button class="copy" data-copy="https://raw.githubusercontent.com/Zate/agent-help/main/SPEC.md" aria-label="Copy URL">Copy URL</button>
           </div>
         </article>
       </div>
 
       <div class="prompts">
-        <p class="prompts-heading">Prompts to try</p>
+        <p class="prompts-heading">Prompt to try</p>
         <div class="prompt-cards">
-          <div class="prompt-card">
-            <p class="prompt-tag">explain</p>
-            <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt
-and explain what agent-help is for.</code></pre>
-          </div>
           <div class="prompt-card">
             <p class="prompt-tag">implement</p>
             <pre><code>Read https://raw.githubusercontent.com/Zate/agent-help/main/llms-full.txt
-and implement agent-help in this CLI.</code></pre>
+and implement agent-help in this CLI. Preserve --help and --json.</code></pre>
           </div>
         </div>
-        <p class="prompts-foot"><a href="prompts.html">More prompts&nbsp;→</a></p>
+        <p class="prompts-foot"><a href="prompts.html">More implementation prompts&nbsp;→</a></p>
       </div>
     </section>
 
@@ -613,10 +580,10 @@ and implement agent-help in this CLI.</code></pre>
       </header>
 
       <div class="rn-grid">
-        <a class="rn-card primary" href="spec.html">
-          <span class="rn-tag">specification</span>
-          <strong>AHF&nbsp;Draft v0.1</strong>
-          <span>The Internet-Draft style specification. Records, scalars, conformance, security.</span>
+        <a class="rn-card primary" href="docs/implementation-guides.html">
+          <span class="rn-tag">start here</span>
+          <strong>Implementation guides</strong>
+          <span>Add the two flags in Cobra, Click, argparse, Clap, or Commander.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
         <a class="rn-card" href="faq.html">
@@ -625,16 +592,16 @@ and implement agent-help in this CLI.</code></pre>
           <span>Why agent-help? Why not just MCP, JSON, or a man page?</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">
-          <span class="rn-tag">checklist</span>
-          <strong>Adopter checklist&nbsp;↗</strong>
-          <span>Track readiness from breadcrumb to runtime output.</span>
+        <a class="rn-card" href="examples/">
+          <span class="rn-tag">samples</span>
+          <strong>Examples</strong>
+          <span>See the tiny wire outputs agents consume.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="rn-card" href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">
-          <span class="rn-tag">research</span>
-          <strong>Prior art&nbsp;↗</strong>
-          <span>How agent-help relates to docopt, man, structured logging, and more.</span>
+        <a class="rn-card" href="prompts.html">
+          <span class="rn-tag">copy/paste</span>
+          <strong>Implementation prompts</strong>
+          <span>Ask a coding agent to add the two flags.</span>
           <span class="rn-arrow" aria-hidden="true">→</span>
         </a>
         <a class="rn-card" href="impl/">
@@ -668,38 +635,32 @@ and implement agent-help in this CLI.</code></pre>
       </div>
 
       <div class="foot-col">
-        <p class="foot-heading">Specification</p>
+        <p class="foot-heading">Start</p>
         <ul>
-          <li><a href="spec.html">AHF Draft v0.1</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
-          <li><a href="spec/ahf-v0.1.json">Machine-readable registry</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
-        </ul>
-      </div>
-
-      <div class="foot-col">
-        <p class="foot-heading">For agents</p>
-        <ul>
-          <li><a href="llms.txt">llms.txt</a></li>
-          <li><a href="llms-full.txt">llms-full.txt</a></li>
-          <li><a href="https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md">SKILL.md</a></li>
-          <li><a href="agent-help.ahf">agent-help.ahf</a></li>
-          <li><a href="agent-help-full.ahf">agent-help-full.ahf</a></li>
-          <li><a href="prompts.html">Prompts</a></li>
-        </ul>
-      </div>
-
-      <div class="foot-col">
-        <p class="foot-heading">For implementers</p>
-        <ul>
-          <li><a href="docs/implementation-guides.html">Framework guides</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/RELEASE_CHECKLIST.md" rel="noopener">Release checklist ↗</a></li>
-          <li><a href="impl/">Reference implementation</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="docs/implementation-guides.html">Implementation guides</a></li>
           <li><a href="examples/">Examples</a></li>
+          <li><a href="impl/">Reference implementation</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">Implementation references</p>
+        <ul>
+          <li><a href="llms-full.txt">llms-full.txt</a></li>
+          <li><a href="prompts.html">Prompts</a></li>
+          <li><a href="spec.html">Detailed contract</a></li>
+          <li><a href="spec/ahf-v0.1.json">Registry JSON</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/SECURITY.md" rel="noopener">Security policy ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
         </ul>
       </div>
 
@@ -716,7 +677,7 @@ and implement agent-help in this CLI.</code></pre>
       </div>
     </div>
     <div class="foot-sig">
-      <p>Built as a spec, shaped like a tool, sized for an agent.</p>
+      <p>MCP-lite for CLIs: two flags, no daemon, no runtime skill.</p>
       <p class="foot-mini">© 2026 agent-help contributors.</p>
     </div>
   </footer>

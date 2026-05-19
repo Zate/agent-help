@@ -2,21 +2,45 @@
 
 These notes cover common CLI frameworks without repeating the full AHF shape. Use the [spec](https://zate.github.io/agent-help/spec.html) for the format, and use this file for framework-specific wiring.
 
-## Shared Pattern
+## Minimum viable implementation
 
-- Keep human `--help` human-oriented. Don't touch it.
-- Add a short breadcrumb or equivalent pointer to `--agent-help`.
-- Treat documented `--agent-help` placement as trailing: `tool subcmd --agent-help`.
-- Generate AH1/AH2 from command metadata where practical — don't maintain a separate list.
-- Add `--agent-out` only to commands that return structured runtime results.
-- Protect the surface with golden or snapshot tests.
+Do this first:
 
-### The three steps
-
-1. **~1 min:** Add the breadcrumb to normal `--help` output:
+1. Keep human `--help` human-oriented.
+2. Add this breadcrumb to normal help:
    `LLM agent? Use --agent-help for token-optimized usage.`
-2. **~1 hr:** Wire up `--agent-help` as a hidden persistent/global flag. Root invocation emits AH1; subcommand invocation emits AH2.
-3. **~2 hrs:** Add `--agent-out` to result-returning commands. Emit an AHF `ok`/`err` envelope, then a TOON result body.
+3. Add trailing `--agent-help`:
+   - `tool --agent-help` emits the command index.
+   - `tool subcmd --agent-help` emits command detail.
+4. Generate that help from command metadata where practical.
+5. Add `--agent-out` only to commands that return structured results.
+6. Test the output with golden or snapshot tests.
+
+That is enough. Avoid maturity labels, separate conformance levels, and hand-maintained docs that can drift.
+
+## Tiny readiness checklist
+
+Before calling an implementation done:
+
+- [ ] `tool --help` points agents to `--agent-help`.
+- [ ] `tool --agent-help` lists primary commands with `cmd` records.
+- [ ] Every listed command supports `tool subcmd --agent-help`.
+- [ ] Required args and flags in `--agent-help` match real validation.
+- [ ] Examples either run successfully or are omitted.
+- [ ] Structured result commands support `--agent-out`, or you intentionally skipped them.
+- [ ] `--agent-out` starts with `ok` or `err` and includes exact `next` commands for pagination or useful follow-up.
+- [ ] Agent-facing output avoids secrets, unnecessary personal data, colors, markdown tables, and prose paragraphs.
+
+## Consuming output
+
+Consumers do not need a formal parser to get value:
+
+1. Read lines.
+2. Inspect the first token: `ah1`, `cmd`, `ah2`, `use`, `arg`, `flag`, `ok`, `err`, `hint`, `next`, etc.
+3. For `err`, use `hint`, `use`, and `next` records to recover.
+4. For `ok`, read metadata like `count`, `more`, and `cursor`.
+5. Treat the result body after `ok` as TOON when present.
+6. Use `next` records as exact follow-up commands.
 
 ## Go / Cobra
 

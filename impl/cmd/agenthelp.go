@@ -64,7 +64,7 @@ func nextLine(label, cmd string) {
 }
 
 // kvLine emits a simple key-value line for bare scalar results
-// where a TOON block would be overkill (§12.4 of AHF-RFC.md).
+// where a TOON block would be overkill (§8 of SPEC.md).
 func kvLine(key, value string) {
 	if strings.ContainsAny(value, " \t") {
 		fmt.Printf("%s %q\n", key, value)

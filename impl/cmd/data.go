@@ -70,6 +70,6 @@ var MockProject = []ProjectRow{
 	{"version", "0.1.0"},
 	{"status", "draft"},
 	{"owner", "team-cli"},
-	{"spec", "AHF-RFC.md"},
+	{"spec", "SPEC.md"},
 	{"repo", "github.com/Zate/agent-help"},
 }

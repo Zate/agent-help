@@ -3,7 +3,7 @@
   "short_name": "AHF",
   "version": "0.1",
   "status": "draft",
-  "canonical_url": "https://zate.github.io/agent-help/AHF-RFC.md",
+  "canonical_url": "https://zate.github.io/agent-help/SPEC.md",
   "repository": "https://github.com/Zate/agent-help",
   "surfaces": {
     "help": {
@@ -46,11 +46,6 @@
     {"type": "dur", "meaning": "duration string"},
     {"type": "kv", "meaning": "key:value pair"},
     {"type": "enum(a|b)", "meaning": "one of the listed values"}
-  ],
-  "conformance_levels": [
-    "agent-help-core",
-    "agent-help-runtime",
-    "agent-help-full"
   ],
   "examples": {
     "ah1": [

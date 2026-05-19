@@ -22,9 +22,9 @@
     </a>
     <nav class="topnav" aria-label="Primary">
       <a href="https://zate.github.io/agent-help/#concept">Concept</a>
-      <a href="https://zate.github.io/agent-help/spec.html">Spec</a>
+      <a href="https://zate.github.io/agent-help/#wire">Wire</a>
       <a href="https://zate.github.io/agent-help/#implement">Implement</a>
-      <a href="../prompts.html">For&nbsp;agents</a>
+      <a href="../prompts.html">Prompts</a>
       <a href="https://zate.github.io/agent-help/faq.html">FAQ</a>
       <a class="external" href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
@@ -32,11 +32,11 @@
 
   <div class="statusbar" aria-label="Status">
     <span class="dot"></span>
-    <span>Internet-Draft style · open for trial implementations · last updated <time datetime="2026-05-18">2026-05-18</time></span>
+    <span>MCP-lite for CLIs · two flags · no daemon, plugin, or runtime skill required</span>
     <span class="sep">·</span>
-    <span>Code <a href="../LICENSE">Apache-2.0</a></span>
+    <span>Code <a href="../../LICENSE">Apache-2.0</a></span>
     <span class="sep">·</span>
-    <span>Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></span>
+    <span>Spec <a href="../../LICENSE-DOCS">CC-BY-4.0</a></span>
   </div>
 
   <main id="main">
@@ -45,7 +45,7 @@
       <nav class="doc-toc" aria-label="Page contents">
         <p class="doc-toc-heading">Frameworks</p>
         <ul>
-          <li><a href="#shared">Shared pattern</a></li>
+          <li><a href="#shared">Minimum viable</a></li>
           <li><a href="#cobra">Go / Cobra</a></li>
           <li><a href="#click">Python / Click</a></li>
           <li><a href="#argparse">Python / argparse</a></li>
@@ -56,10 +56,9 @@
         <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
           <p class="doc-toc-heading">Related</p>
           <ul>
-            <li><a href="https://zate.github.io/agent-help/spec.html">Full spec</a></li>
+              <li><a href="https://zate.github.io/agent-help/spec.html">Detailed contract</a></li>
             <li><a href="https://zate.github.io/agent-help/examples/">Wire examples</a></li>
-            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
-            <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
+            <li><a href="https://zate.github.io/agent-help/prompts.html">Implementation prompts</a></li>
           </ul>
         </div>
       </nav>
@@ -73,23 +72,38 @@
 
         <!-- SHARED PATTERN -->
         <div id="shared">
-          <h2>Shared pattern</h2>
-          <p>Regardless of framework, the approach is the same:</p>
+          <h2>Minimum viable implementation</h2>
+          <p>Do this first:</p>
+          <ol>
+            <li>Keep human <code>--help</code> human-oriented.</li>
+            <li>Add this breadcrumb to normal help:<br><code>LLM agent? Use --agent-help for token-optimized usage.</code></li>
+            <li>Add trailing <code>--agent-help</code>: root emits a command index; subcommands emit command detail.</li>
+            <li>Generate that help from command metadata where practical.</li>
+            <li>Add <code>--agent-out</code> only to commands that return structured results.</li>
+            <li>Test the output with golden or snapshot tests.</li>
+          </ol>
+          <p>That is enough. Avoid maturity labels, separate conformance levels, and hand-maintained docs that can drift.</p>
+
+          <h3>Tiny readiness checklist</h3>
           <ul>
-            <li>Keep human <code>--help</code> human-oriented. Don't touch it.</li>
-            <li>Add a short breadcrumb line pointing agents to <code>--agent-help</code>.</li>
-            <li>Treat <code>--agent-help</code> as <strong>trailing</strong>: <code>tool subcmd --agent-help</code>.</li>
-            <li>Generate AH1/AH2 from command metadata where practical — don't maintain a separate list.</li>
-            <li>Add <code>--agent-out</code> only to commands that return structured runtime results.</li>
-            <li>Protect the surface with golden or snapshot tests.</li>
+            <li><code>tool --help</code> points agents to <code>--agent-help</code>.</li>
+            <li><code>tool --agent-help</code> lists primary commands with <code>cmd</code> records.</li>
+            <li>Every listed command supports <code>tool subcmd --agent-help</code>.</li>
+            <li>Required args and flags match real validation.</li>
+            <li>Examples either run successfully or are omitted.</li>
+            <li>Structured result commands support <code>--agent-out</code>, or you intentionally skipped them.</li>
+            <li><code>--agent-out</code> starts with <code>ok</code> or <code>err</code> and includes exact <code>next</code> commands for pagination or useful follow-up.</li>
+            <li>Agent-facing output avoids secrets, unnecessary personal data, colors, markdown tables, and prose paragraphs.</li>
           </ul>
 
-          <h3>The three steps</h3>
+          <h3>Consuming output</h3>
           <ol>
-            <li><strong>~1 min:</strong> Add the breadcrumb to normal <code>--help</code> output:<br>
-              <code>LLM agent? Use --agent-help for token-optimized usage.</code></li>
-            <li><strong>~1 hr:</strong> Wire up <code>--agent-help</code> as a hidden persistent/global flag. Root invocation emits AH1; subcommand invocation emits AH2.</li>
-            <li><strong>~2 hrs:</strong> Add <code>--agent-out</code> to result-returning commands. Emit an AHF <code>ok</code>/<code>err</code> envelope, then a TOON result body.</li>
+            <li>Read lines.</li>
+            <li>Inspect the first token: <code>ah1</code>, <code>cmd</code>, <code>ah2</code>, <code>use</code>, <code>arg</code>, <code>flag</code>, <code>ok</code>, <code>err</code>, <code>hint</code>, <code>next</code>, etc.</li>
+            <li>For <code>err</code>, use <code>hint</code>, <code>use</code>, and <code>next</code> records to recover.</li>
+            <li>For <code>ok</code>, read metadata like <code>count</code>, <code>more</code>, and <code>cursor</code>.</li>
+            <li>Treat the result body after <code>ok</code> as TOON when present.</li>
+            <li>Use <code>next</code> records as exact follow-up commands.</li>
           </ol>
         </div>
 
@@ -236,7 +250,7 @@ program.hook("preAction", (thisCommand) =&gt; {
         <!-- REF IMPL -->
         <div id="refimpl">
           <h2>Reference implementation</h2>
-          <p>The Go/Cobra <code>mem</code> demo in <a href="../impl/"><code>impl/</code></a> is a complete, working implementation targeting <code>agent-help-full</code> conformance. It demonstrates:</p>
+          <p>The Go/Cobra <code>mem</code> demo in <a href="../../impl/"><code>impl/</code></a> is a complete, working implementation for a small CLI. It demonstrates:</p>
           <ul>
             <li>AH1 and AH2 help surfaces derived from Cobra command metadata</li>
             <li>AHF <code>ok</code>/<code>err</code>/<code>warn</code> protocol records</li>
@@ -259,38 +273,32 @@ program.hook("preAction", (thisCommand) =&gt; {
           <span class="brand-status">DRAFT&nbsp;·&nbsp;v0.1</span>
         </div>
         <p>An open convention for CLIs that AI agents can discover and use directly.</p>
-        <p class="foot-mini">Code <a href="../LICENSE">Apache-2.0</a> · Spec <a href="../LICENSE-DOCS">CC-BY-4.0</a></p>
+        <p class="foot-mini">Code <a href="../../LICENSE">Apache-2.0</a> · Spec <a href="../../LICENSE-DOCS">CC-BY-4.0</a></p>
       </div>
       <div class="foot-col">
-        <p class="foot-heading">Specification</p>
+        <p class="foot-heading">Start</p>
         <ul>
-          <li><a href="../spec.html">AHF Draft v0.1</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/CONFORMANCE.md" rel="noopener">Conformance levels ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/VERSIONING.md" rel="noopener">Versioning policy ↗</a></li>
-          <li><a href="../spec/ahf-v0.1.json">Machine-readable registry</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <p class="foot-heading">For agents</p>
-        <ul>
-          <li><a href="../llms.txt">llms.txt</a></li>
-          <li><a href="../llms-full.txt">llms-full.txt</a></li>
-          <li><a href="https://raw.githubusercontent.com/Zate/agent-help/main/.agents/skills/ahf/SKILL.md">SKILL.md</a></li>
-          <li><a href="../agent-help.ahf">agent-help.ahf</a></li>
-          <li><a href="../agent-help-full.ahf">agent-help-full.ahf</a></li>
-          <li><a href="../prompts.html">Prompts</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <p class="foot-heading">For implementers</p>
-        <ul>
-          <li><a href="implementation-guides.html" aria-current="page">Framework guides</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/ADOPTER_CHECKLIST.md" rel="noopener">Adopter checklist ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PARSING.md" rel="noopener">Parsing notes ↗</a></li>
-          <li><a href="https://github.com/Zate/agent-help/blob/main/docs/PRIOR_ART.md" rel="noopener">Prior art ↗</a></li>
-          <li><a href="../impl/">Reference implementation</a></li>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="implementation-guides.html" aria-current="page">Implementation guide</a></li>
           <li><a href="../examples/">Examples</a></li>
+          <li><a href="../../impl/">Reference implementation</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Implementation references</p>
+        <ul>
+          <li><a href="../../llms-full.txt">llms-full.txt</a></li>
+          <li><a href="../prompts.html">Prompts</a></li>
+          <li><a href="../spec.html">Detailed contract</a></li>
+          <li><a href="../../spec/ahf-v0.1.json">Registry JSON</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-heading">Project</p>
+        <ul>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CONTRIBUTING.md" rel="noopener">Contributing ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help/blob/main/CHANGELOG.md" rel="noopener">Changelog ↗</a></li>
+          <li><a href="https://github.com/Zate/agent-help" rel="noopener">GitHub&nbsp;↗</a></li>
         </ul>
       </div>
       <div class="foot-col">

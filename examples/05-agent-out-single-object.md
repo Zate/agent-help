@@ -15,7 +15,7 @@ project[#6]{key,value}:
   version,0.1.0
   status,draft
   owner,team-cli
-  spec,AHF-RFC.md
+  spec,SPEC.md
   repo,github.com/Zate/agent-help
 next nodes "mem node list --agent-out"
 ```

@@ -1,8 +1,10 @@
-# agent-help implementation brief for LLM agents
+# agent-help implementation brief for LLM coding agents
 
-Use this brief when a user asks you to make a CLI agent-native, implement agent-help, add --agent-help, add --agent-out, or make command output easier for AI agents to consume.
+Use this brief only when a user asks you to IMPLEMENT agent-help in a CLI: make a CLI agent-native, add --agent-help, add --agent-out, or make command output easier for AI agents to consume.
 
-Goal: implement agent-native CLI surfaces without breaking human or software output.
+Do not treat this as runtime documentation for using an already agent-help-enabled CLI. A working implementation must be self-describing from its own --help, --agent-help, and --agent-out outputs.
+
+Goal: add two small agent-native CLI surfaces without breaking human or software output.
 
 Audience split:
 - humans: default output and --help

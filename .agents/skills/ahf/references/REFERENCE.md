@@ -1,6 +1,6 @@
 # agent-help Quick Reference
 
-Full spec: [AHF-RFC.md](../AHF-RFC.md)  
+Full spec: [SPEC.md](../../../../SPEC.md)  
 TOON spec: https://github.com/toon-format/spec
 
 ## AHF record prefixes

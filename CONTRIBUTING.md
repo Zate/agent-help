@@ -22,10 +22,10 @@ For substantive spec changes, please open an issue first so the change can be di
 #### PR checklist
 
 - [ ] `make test` passes locally
-- [ ] Changes to `AHF-RFC.md` are reflected in `llms-full.txt` if they affect the implementation brief
+- [ ] Changes to `SPEC.md` are reflected in `llms-full.txt` if they affect the implementation brief
 - [ ] New examples follow the format in `examples/` (numbered, with source command and raw output)
-- [ ] If adding a new AHF record prefix, update §9 (Record Prefix Registry) in `AHF-RFC.md`
-- [ ] If adding a new scalar type, update §10 (Scalar Type Registry) in `AHF-RFC.md`
+- [ ] If adding a new AHF record prefix, update §5 (Record Prefix Registry) in `SPEC.md`
+- [ ] If adding a new scalar type, update §6 (Scalar Type Registry) in `SPEC.md`
 - [ ] If changing registries, update `spec/ahf-v0.1.json` and run `make check-drift`
 - [ ] If changing public behavior, update `CHANGELOG.md`
 - [ ] .agents/skills/ahf/SKILL.md stays under 500 lines (move detail to `references/` if needed)
@@ -52,20 +52,13 @@ The following design questions are explicitly open in the current draft. Each ha
 2. **Formal grammar** — Should a formal ABNF grammar be added in v0.2?
 3. **MIME type** — Should MIME type registration be pursued for an agent-help media type?
 4. **Extension namespacing** — Should record prefix extension namespacing be defined?
-5. **Conformance levels** — Should conformance levels distinguish `--agent-help`-only from full `--agent-help` + `--agent-out`?
-6. **Test suite** — Should examples be packaged as a model comprehension test suite?
+5. **Test suite** — Should examples be packaged as a model comprehension test suite?
 
-See [§21 of the spec](AHF-RFC.md#21-open-questions) for context on each question.
+See [§16 of the spec](SPEC.md#16-open-questions) for context on each question.
 
 ## Versioning
 
-See [VERSIONING.md](docs/docs/VERSIONING.md) for the full draft stability and release policy. In short, AHF follows a simple versioning scheme:
-
-- **Patch** (v0.1.x) — errata, clarifications, no normative changes
-- **Minor** (v0.x) — new optional features, backward-compatible
-- **Major** (vX.0) — breaking changes to the record format or required conventions
-
-The current draft is **v0.1**. The core wire shape is stable enough for trial implementations, but registry entries, naming details, and conformance levels may change before v1.0.
+The current draft is **v0.1**. Treat the core wire shape as stable enough for trial implementations, but expect names and registry details to change before v1.0.
 
 ## Scope
 
